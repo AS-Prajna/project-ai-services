@@ -8,7 +8,7 @@ spec:
   containers:
      # Etcd sidecar
     - name: etcd
-      image: icr.io/ai-services-private/etcd:3.6.5
+      image: icr.io/ai-services/etcd:3.6.5
       command:
         - etcd
         - --data-dir=/etcd
@@ -50,7 +50,7 @@ spec:
     
     # MinIO sidecar
     - name: minio
-      image: icr.io/ai-services-private/minio:RELEASE.2025-09-07T16-13-09Z
+      image: icr.io/ai-services/minio:RELEASE.2025-09-07T16-13-09Z
       command: ["minio", "server", "/minio_data", "--console-address", ":9001"]
       env:
         - name: MINIO_ACCESS_KEY
