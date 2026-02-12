@@ -12,7 +12,7 @@ from docling.datamodel.document import DoclingDocument, TextItem
 from concurrent.futures import as_completed, ProcessPoolExecutor, ThreadPoolExecutor
 from sentence_splitter import SentenceSplitter
 
-from common.llm_utils import create_llm_session, classify_text_with_llm, summarize_table, tokenize_with_llm
+from common.llm_utils import create_llm_session, summarize_and_classify_tables, tokenize_with_llm
 from common.misc_utils import get_logger, generate_file_checksum, text_suffix, table_suffix
 from common.misc_utils import get_logger, generate_file_checksum, text_suffix, table_suffix, chunk_suffix
 from ingest.pdf_utils import get_toc, get_matching_header_lvl, load_pdf_pages, find_text_font_size, get_pdf_page_count
@@ -21,8 +21,8 @@ logging.getLogger('docling').setLevel(logging.CRITICAL)
 
 logger = get_logger("Docling")
 
-LIGHT_PDF_POOL_SIZE = 4
-HEAVY_PDF_POOL_SIZE = 2
+WORKER_SIZE = 4
+HEAVY_PDF_CONVERT_WORKER_SIZE = 2
 
 HEAVY_PDF_PAGE_THRESHOLD = 500
 
@@ -181,9 +181,7 @@ def process_converted_document(converted_json_path, pdf_path, out_path, conversi
                 table_htmls = [table_dict[key]["html"] for key in sorted(table_dict)]
                 table_captions_list = [table_dict[key]["caption"] for key in sorted(table_dict)]
 
-                table_summaries = summarize_table(table_htmls, gen_model, gen_endpoint, pdf_path)
-
-                decisions = classify_text_with_llm(table_summaries, gen_model, gen_endpoint, pdf_path)
+                table_summaries, decisions = summarize_and_classify_tables(table_htmls, gen_model, gen_endpoint, pdf_path)
                 filtered_table_dicts = {
                     idx: {
                         'html': html,
@@ -350,14 +348,15 @@ def process_documents(input_paths, out_path, llm_model, llm_endpoint, emb_endpoi
 
     try:
         # Light files can be processed in parallel with worker_size
-        worker_size = min(LIGHT_PDF_POOL_SIZE, len(light_files))
+        worker_size = min(WORKER_SIZE, len(light_files))
         l_stats, l_chunks, l_tables = _run_batch(
             light_files,
             convert_worker=worker_size,
             max_worker=worker_size,
         )
 
-        convert_worker_size = min(HEAVY_PDF_POOL_SIZE, len(heavy_files))
+        worker_size = min(WORKER_SIZE, len(heavy_files))
+        convert_worker_size = min(HEAVY_PDF_CONVERT_WORKER_SIZE, len(heavy_files))
         h_stats, h_chunks, h_tables = _run_batch(
             heavy_files,
             convert_worker=convert_worker_size, # Heavy files conversion should happen with less workers compared to light files conversion
