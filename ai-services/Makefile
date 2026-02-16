@@ -34,3 +34,17 @@ build:
 .PHONY: test
 test:
 	$(TEST_CMD)
+
+REPORT_DIR := tests/e2e/reports
+RUN_ID := $(shell date +%s)
+export RUN_ID
+
+TEST_ARGS ?=
+TEST_CMD = ginkgo $(TEST_ARGS) -r ./tests/e2e
+
+.PHONY: test-generate-report
+test-generate-report: TEST_ARGS=--junit-report=$(REPORT_DIR)/report-$(RUN_ID).xml
+test-generate-report:
+	@mkdir -p $(REPORT_DIR)
+	@echo "Using RUN_ID=$(RUN_ID)"
+	$(TEST_CMD)
