@@ -3,9 +3,8 @@
 }
 
 .iconWidth {
-  width: 50px;
+  width: 60px;
 }
-:global(.cds--header__menu-trigger:focus:not(:focus-visible)) {
-  outline: none !important;
-  box-shadow: none !important;
+.menuBtn {
+  border: none !important;
 }

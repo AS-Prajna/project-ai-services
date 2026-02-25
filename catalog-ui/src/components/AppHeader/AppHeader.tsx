@@ -27,6 +27,7 @@ const AppHeader = (props: AppHeaderProps) => {
           }}
           isActive={isSideNavOpen}
           isCollapsible
+          className={styles.menuBtn}
         />
 
         <HeaderName prefix="IBM">Power Operations Platform</HeaderName>

@@ -1,16 +1,29 @@
 import { Theme, SideNav, SideNavItems, SideNavMenuItem } from "@carbon/react";
-import { NavLink, useLocation } from "react-router-dom";
-import type { RefObject } from "react";
+import { NavLink } from "react-router-dom";
+import { useRef, useEffect } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import styles from "./Navbar.module.scss";
 
 type NavbarProps = {
   isSideNavOpen: boolean;
-  sideNavRef?: RefObject<HTMLElement>;
+  setIsSideNavOpen?: Dispatch<SetStateAction<boolean>>;
 };
 
 const Navbar = (props: NavbarProps) => {
-  const { isSideNavOpen, sideNavRef } = props;
-  const location = useLocation();
+  const { isSideNavOpen, setIsSideNavOpen } = props;
+  const navRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    function handleOutsideClick(e: MouseEvent) {
+      if (!isSideNavOpen || !setIsSideNavOpen) return;
+      const target = e.target as Node;
+      if (navRef.current && navRef.current.contains(target)) return;
+      setIsSideNavOpen(false);
+    }
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [isSideNavOpen, setIsSideNavOpen]);
 
   return (
     <Theme theme="g100">
@@ -18,7 +31,7 @@ const Navbar = (props: NavbarProps) => {
         aria-label="Side navigation"
         expanded={isSideNavOpen}
         isPersistent={false}
-        ref={sideNavRef}
+        ref={navRef}
       >
         <SideNavItems>
           <NavLink to="/applications" className={styles.navLink}>
