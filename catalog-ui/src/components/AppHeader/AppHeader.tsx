@@ -27,13 +27,16 @@ const AppHeader = (props: AppHeaderProps) => {
   const minimal = props.minimal === true;
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  const userIconRef = useRef<HTMLButtonElement | null>(null);
   const navigate = useNavigate();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
       if (
         panelRef.current &&
-        !panelRef.current.contains(event.target as Node)
+        !panelRef.current.contains(target) &&
+        !(userIconRef.current && userIconRef.current.contains(target))
       ) {
         setIsProfileOpen(false);
       }
@@ -84,6 +87,7 @@ const AppHeader = (props: AppHeaderProps) => {
               className={styles.iconWidth}
               isActive={isProfileOpen}
               onClick={() => setIsProfileOpen((prev) => !prev)}
+              ref={userIconRef}
             >
               <User size={20} />
             </HeaderGlobalAction>
