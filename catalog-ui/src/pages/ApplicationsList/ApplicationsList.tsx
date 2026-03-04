@@ -182,7 +182,7 @@ const ApplicationsListPage = () => {
   return (
     <>
       {toastOpen && (
-        <ActionableNotification 
+        <ActionableNotification
           actionButtonLabel="Try again"
           aria-label="close notification"
           kind="error"
@@ -207,7 +207,7 @@ const ApplicationsListPage = () => {
             kind: "tertiary",
             label: "Learn more",
             renderIcon: ArrowRight,
-            onClick: () => { },
+            onClick: () => {},
           },
         ]}
         pageActionsOverflowLabel="More actions"
@@ -316,8 +316,11 @@ const ApplicationsListPage = () => {
                                       size="sm"
                                       renderIcon={TrashCan}
                                       iconDescription="Delete"
-                                      className={`${styles.deleteButton} ${selectedRowId === row.id ? styles.selectedDelete : ""
-                                        }`}
+                                      className={`${styles.deleteButton} ${
+                                        selectedRowId === row.id
+                                          ? styles.selectedDelete
+                                          : ""
+                                      }`}
                                       onClick={() => {
                                         setSelectedRowId(row.id as string);
                                         setdeleteDialogOpen(true);
