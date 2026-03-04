@@ -13,13 +13,13 @@ import {
   TableToolbarContent,
   TableToolbarSearch,
   Pagination,
-  Modal,
   Button,
-  Checkbox,
-  ActionableNotification,
-  CheckboxGroup,
   Grid,
   Column,
+  Checkbox,
+  CheckboxGroup,
+  ActionableNotification,
+  Modal,
   type DataTableHeader,
 } from "@carbon/react";
 import {
@@ -112,14 +112,13 @@ const ApplicationsListPage = () => {
   const [search, setSearch] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-  const [isDeleteDialogOpen, setdeleteDialogOpen] = useState<boolean>(false);
+   const [isDeleteDialogOpen, setdeleteDialogOpen] = useState<boolean>(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [rowsData, setRowsData] = useState<ApplicationRow[]>(rows);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [toastOpen, setToastOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-
   const handleDelete = async () => {
     if (!selectedRowId) {
       setErrorMessage("No application selected to delete.");
@@ -158,8 +157,7 @@ const ApplicationsListPage = () => {
       setIsConfirmed(false);
     }
   };
-
-  const filteredRows = rowsData.filter((row) =>
+  const filteredRows = rows.filter((row) =>
     [
       row.name,
       row.template,
@@ -183,7 +181,7 @@ const ApplicationsListPage = () => {
 
   return (
     <>
-      {toastOpen && (
+    {toastOpen && (
         <ActionableNotification
           actionButtonLabel="Try again"
           aria-label="close notification"
@@ -311,45 +309,6 @@ const ApplicationsListPage = () => {
                               row,
                             });
 
-                            if (cell.info.header === "actions") {
-                              return (
-                                <TableCell key={cellKey} {...cellProps}>
-                                  <div className={styles.rowActions}>
-                                    <Button
-                                      kind="tertiary"
-                                      size="sm"
-                                      renderIcon={ArrowUpRight}
-                                    >
-                                      Open
-                                    </Button>
-                                    <Button
-                                      hasIconOnly
-                                      kind="tertiary"
-                                      size="sm"
-                                      renderIcon={CopyLink}
-                                      iconDescription="Copy"
-                                    />
-                                    <Button
-                                      hasIconOnly
-                                      kind="ghost"
-                                      size="sm"
-                                      renderIcon={TrashCan}
-                                      iconDescription="Delete"
-                                      className={`${styles.deleteButton} ${
-                                        selectedRowId === row.id
-                                          ? styles.selectedDelete
-                                          : ""
-                                      }`}
-                                      onClick={() => {
-                                        setSelectedRowId(row.id as string);
-                                        setToastOpen(false);
-                                        setdeleteDialogOpen(true);
-                                      }}
-                                    />
-                                  </div>
-                                </TableCell>
-                              );
-                            }
                             return (
                               <TableRow key={rowKey} {...rowProps}>
                                 {row.cells.map((cell) => {
@@ -374,13 +333,23 @@ const ApplicationsListPage = () => {
                                             renderIcon={CopyLink}
                                             iconDescription="Copy"
                                           />
-                                          <Button
-                                            hasIconOnly
-                                            kind="ghost"
-                                            size="sm"
-                                            renderIcon={TrashCan}
-                                            iconDescription="Delete"
-                                          />
+                                         <Button
+                                      hasIconOnly
+                                      kind="ghost"
+                                      size="sm"
+                                      renderIcon={TrashCan}
+                                      iconDescription="Delete"
+                                      className={`${styles.deleteButton} ${
+                                        selectedRowId === row.id
+                                          ? styles.selectedDelete
+                                          : ""
+                                      }`}
+                                      onClick={() => {
+                                        setSelectedRowId(row.id as string);
+                                        setToastOpen(false);
+                                        setdeleteDialogOpen(true);
+                                      }}
+                                    />
                                         </div>
                                       </TableCell>
                                     );
@@ -399,21 +368,23 @@ const ApplicationsListPage = () => {
                     </Table>
                   </TableContainer>
 
-              <Pagination
-                page={page}
-                pageSize={pageSize}
-                pageSizes={[5, 10, 20, 30]}
-                totalItems={filteredRows.length}
-                onChange={({ page, pageSize }) => {
-                  setPage(page);
-                  setPageSize(pageSize);
-                }}
-              />
-            </>
-          )}
-        </DataTable>
-      </div>
-      <Modal
+                  {filteredRows.length > 20 && (
+                    <Pagination
+                      page={page}
+                      pageSize={pageSize}
+                      pageSizes={[5, 10, 20, 30]}
+                      totalItems={filteredRows.length}
+                      onChange={({ page, pageSize }) => {
+                        setPage(page);
+                        setPageSize(pageSize);
+                      }}
+                    />
+                  )}
+                </>
+              )}
+            </DataTable>
+          </div>
+          <Modal
         open={isDeleteDialogOpen}
         size="xs"
         modalLabel="Delete Case routing"
@@ -454,22 +425,6 @@ const ApplicationsListPage = () => {
           </CheckboxGroup>
         </div>
       </Modal>
-                  {filteredRows.length > 20 && (
-                    <Pagination
-                      page={page}
-                      pageSize={pageSize}
-                      pageSizes={[5, 10, 20, 30]}
-                      totalItems={filteredRows.length}
-                      onChange={({ page, pageSize }) => {
-                        setPage(page);
-                        setPageSize(pageSize);
-                      }}
-                    />
-                  )}
-                </>
-              )}
-            </DataTable>
-          </div>
         </Column>
       </Grid>
     </>
