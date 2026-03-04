@@ -120,6 +120,7 @@ const ApplicationsListPage = () => {
   const handleDelete = async () => {
     if (!selectedRowId) {
       setErrorMessage("No application selected to delete.");
+      setSelectedRowId(null);
       setToastOpen(true);
       return;
     }
@@ -140,23 +141,18 @@ const ApplicationsListPage = () => {
           .catch(() => res.statusText || "Delete failed");
         throw new Error(text || `Delete failed (${res.status})`);
       }
-
-      // On success remove locally
       setRowsData((prev) => prev.filter((r) => r.id !== selectedRowId));
       setdeleteDialogOpen(false);
-      setSelectedRowId(null);
       setIsConfirmed(false);
     } catch (err) {
       setErrorMessage(
         err instanceof Error ? err.message : "Failed deleting application",
       );
       setToastOpen(true);
-      // keep modal open so user can retry or cancel
     } finally {
       setIsDeleting(false);
       setdeleteDialogOpen(false);
       setIsConfirmed(false);
-      setSelectedRowId(null);
     }
   };
 
@@ -187,9 +183,12 @@ const ApplicationsListPage = () => {
           aria-label="close notification"
           kind="error"
           closeOnEscape
-          title={`Delete technical template ${selectedRowId ? rowsData.find((r) => r.id === selectedRowId)?.name : "selected"}`}
+          title={`Delete technical template ${selectedRowId ? rowsData.find((r) => r.id === selectedRowId)?.name : ""} failed`}
           subtitle={errorMessage}
-          onCloseButtonClick={() => setToastOpen(false)}
+          onCloseButtonClick={() => {
+            setToastOpen(false);
+            setSelectedRowId(null);
+          }}
           style={{
             position: "fixed",
             top: "4rem",
@@ -323,6 +322,7 @@ const ApplicationsListPage = () => {
                                       }`}
                                       onClick={() => {
                                         setSelectedRowId(row.id as string);
+                                        setToastOpen(false);
                                         setdeleteDialogOpen(true);
                                       }}
                                     />
