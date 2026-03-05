@@ -33,7 +33,8 @@ import {
   CopyLink,
 } from "@carbon/icons-react";
 import styles from "./ApplicationsList.module.scss";
-import type { ApplicationRow } from "./types";
+import type { ApplicationRow, AppState, AppAction } from "./types";
+import { ACTION_TYPES } from "./types";
 
 const headers: DataTableHeader[] = [
   { header: "Name", key: "name" },
@@ -108,32 +109,6 @@ const rows: ApplicationRow[] = [
   },
 ];
 
-interface AppState {
-  search: string;
-  page: number;
-  pageSize: number;
-  isDeleteDialogOpen: boolean;
-  isConfirmed: boolean;
-  rowsData: ApplicationRow[];
-  selectedRowId: string | null;
-  toastOpen: boolean;
-  errorMessage: string;
-  errorRowName: string;
-  isDeleting: boolean;
-}
-
-type AppAction =
-  | { type: "SET_SEARCH"; payload: string }
-  | { type: "SET_PAGE"; payload: number }
-  | { type: "SET_PAGE_SIZE"; payload: number }
-  | { type: "OPEN_DELETE_DIALOG"; payload: string }
-  | { type: "CLOSE_DELETE_DIALOG" }
-  | { type: "SET_CONFIRMED"; payload: boolean }
-  | { type: "DELETE_ROW"; payload: string }
-  | { type: "SHOW_ERROR"; payload: { message: string; rowName?: string } }
-  | { type: "HIDE_ERROR" }
-  | { type: "SET_IS_DELETING"; payload: boolean };
-
 const initialState: AppState = {
   search: "",
   page: 1,
@@ -150,36 +125,36 @@ const initialState: AppState = {
 
 const appReducer = (state: AppState, action: AppAction): AppState => {
   switch (action.type) {
-    case "SET_SEARCH":
+    case ACTION_TYPES.SET_SEARCH:
       return { ...state, search: action.payload };
-    case "SET_PAGE":
+    case ACTION_TYPES.SET_PAGE:
       return { ...state, page: action.payload };
-    case "SET_PAGE_SIZE":
+    case ACTION_TYPES.SET_PAGE_SIZE:
       return { ...state, pageSize: action.payload };
-    case "OPEN_DELETE_DIALOG":
+    case ACTION_TYPES.OPEN_DELETE_DIALOG:
       return {
         ...state,
         selectedRowId: action.payload,
         isDeleteDialogOpen: true,
         toastOpen: false,
       };
-    case "CLOSE_DELETE_DIALOG":
+    case ACTION_TYPES.CLOSE_DELETE_DIALOG:
       return {
         ...state,
         isDeleteDialogOpen: false,
         isConfirmed: false,
         selectedRowId: null,
       };
-    case "SET_CONFIRMED":
+    case ACTION_TYPES.SET_CONFIRMED:
       return { ...state, isConfirmed: action.payload };
-    case "DELETE_ROW":
+    case ACTION_TYPES.DELETE_ROW:
       return {
         ...state,
         rowsData: state.rowsData.filter((r) => r.id !== action.payload),
         isDeleteDialogOpen: false,
         isConfirmed: false,
       };
-    case "SHOW_ERROR":
+    case ACTION_TYPES.SHOW_ERROR:
       return {
         ...state,
         errorMessage: action.payload.message,
@@ -187,14 +162,14 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
         toastOpen: true,
         isDeleting: false,
       };
-    case "HIDE_ERROR":
+    case ACTION_TYPES.HIDE_ERROR:
       return {
         ...state,
         toastOpen: false,
         selectedRowId: null,
         errorRowName: "",
       };
-    case "SET_IS_DELETING":
+    case ACTION_TYPES.SET_IS_DELETING:
       return { ...state, isDeleting: action.payload };
     default:
       return state;
@@ -207,13 +182,13 @@ const ApplicationsListPage = () => {
   const handleDelete = async () => {
     if (!state.selectedRowId) {
       dispatch({
-        type: "SHOW_ERROR",
+        type: ACTION_TYPES.SHOW_ERROR,
         payload: { message: "No application selected for deletion" },
       });
       return;
     }
 
-    dispatch({ type: "SET_IS_DELETING", payload: true });
+    dispatch({ type: ACTION_TYPES.SET_IS_DELETING, payload: true });
 
     try {
       // Attempt server-side delete; if no backend exists this may fail.
@@ -227,22 +202,22 @@ const ApplicationsListPage = () => {
           .catch(() => res.statusText || "Delete failed");
         throw new Error(text || `Delete failed (${res.status})`);
       }
-      dispatch({ type: "DELETE_ROW", payload: state.selectedRowId });
+      dispatch({ type: ACTION_TYPES.DELETE_ROW, payload: state.selectedRowId });
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Failed deleting application";
       const name =
         state.rowsData.find((r) => r.id === state.selectedRowId)?.name ?? "";
       dispatch({
-        type: "SHOW_ERROR",
+        type: ACTION_TYPES.SHOW_ERROR,
         payload: { message: msg, rowName: name },
       });
     } finally {
-      dispatch({ type: "SET_IS_DELETING", payload: false });
-      dispatch({ type: "CLOSE_DELETE_DIALOG" }); // still ok; the name is preserved
+      dispatch({ type: ACTION_TYPES.SET_IS_DELETING, payload: false });
+      dispatch({ type: ACTION_TYPES.CLOSE_DELETE_DIALOG }); // still ok; the name is preserved
     }
   };
-  const filteredRows = rows.filter((row) =>
+  const filteredRows = state.rowsData.filter((row) =>
     [
       row.name,
       row.template,
@@ -261,8 +236,9 @@ const ApplicationsListPage = () => {
     state.page * state.pageSize,
   );
 
-  const noApplications = rows.length === 0;
-  const noSearchResults = rows.length > 0 && filteredRows.length === 0;
+  const noApplications = state.rowsData.length === 0;
+  const noSearchResults =
+    state.rowsData.length > 0 && filteredRows.length === 0;
 
   return (
     <>
@@ -275,7 +251,7 @@ const ApplicationsListPage = () => {
           title={`Delete technical template ${state.errorRowName} failed`}
           subtitle={state.errorMessage}
           onCloseButtonClick={() => {
-            dispatch({ type: "HIDE_ERROR" });
+            dispatch({ type: ACTION_TYPES.HIDE_ERROR });
           }}
           style={{
             position: "fixed",
@@ -328,7 +304,7 @@ const ApplicationsListPage = () => {
                         onChange={(e) => {
                           if (typeof e !== "string") {
                             dispatch({
-                              type: "SET_SEARCH",
+                              type: ACTION_TYPES.SET_SEARCH,
                               payload: e.target.value,
                             });
                           }
@@ -433,7 +409,7 @@ const ApplicationsListPage = () => {
                                             }`}
                                             onClick={() => {
                                               dispatch({
-                                                type: "OPEN_DELETE_DIALOG",
+                                                type: ACTION_TYPES.OPEN_DELETE_DIALOG,
                                                 payload: row.id as string,
                                               });
                                             }}
@@ -463,8 +439,14 @@ const ApplicationsListPage = () => {
                       pageSizes={[5, 10, 20, 30]}
                       totalItems={filteredRows.length}
                       onChange={({ page, pageSize }) => {
-                        dispatch({ type: "SET_PAGE", payload: page });
-                        dispatch({ type: "SET_PAGE_SIZE", payload: pageSize });
+                        dispatch({
+                          type: ACTION_TYPES.SET_PAGE,
+                          payload: page,
+                        });
+                        dispatch({
+                          type: ACTION_TYPES.SET_PAGE_SIZE,
+                          payload: pageSize,
+                        });
                       }}
                     />
                   )}
@@ -482,7 +464,7 @@ const ApplicationsListPage = () => {
             danger
             primaryButtonDisabled={!state.isConfirmed}
             onRequestClose={() => {
-              dispatch({ type: "CLOSE_DELETE_DIALOG" });
+              dispatch({ type: ACTION_TYPES.CLOSE_DELETE_DIALOG });
             }}
             onRequestSubmit={handleDelete}
           >
@@ -509,7 +491,10 @@ const ApplicationsListPage = () => {
                   }
                   checked={state.isConfirmed}
                   onChange={(_, { checked }) =>
-                    dispatch({ type: "SET_CONFIRMED", payload: checked })
+                    dispatch({
+                      type: ACTION_TYPES.SET_CONFIRMED,
+                      payload: checked,
+                    })
                   }
                 />
               </CheckboxGroup>
