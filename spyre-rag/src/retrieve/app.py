@@ -15,7 +15,7 @@ from common.llm_utils import create_llm_session, query_vllm_stream, query_vllm_n
 from common.misc_utils import get_model_endpoints, set_log_level, set_request_id
 from common.settings import get_settings
 from common.perf_utils import perf_registry
-from retrieve.backend_utils import search_only
+from retrieve.backend_utils import search_only, validate_query_length
 from retrieve.response_utils import (
     ReferenceRequest,
     ReferenceResponse,
@@ -111,12 +111,26 @@ def limit_concurrency(f):
     description="Search the vector store using the prompt, rerank results, and return relevant document chunks with performance metrics."
 )
 async def get_reference_docs(req: ReferenceRequest) -> ReferenceResponse:
+    # Validate query is not empty
+    if not req.prompt or not req.prompt.strip():
+        raise HTTPException(status_code=400, detail="Query cannot be empty")
+    
     try:
         emb_model = emb_model_dict['emb_model']
         emb_endpoint = emb_model_dict['emb_endpoint']
         emb_max_tokens = emb_model_dict['max_tokens']
         reranker_model = reranker_model_dict['reranker_model']
         reranker_endpoint = reranker_model_dict['reranker_endpoint']
+        
+        # Validate query length
+        is_valid, error_msg = await asyncio.to_thread(
+            validate_query_length, req.prompt, emb_endpoint
+        )
+        if not is_valid:
+            return JSONResponse(
+                    status_code=400,
+                    content={"error": error_msg}
+                )
 
         docs, perf_stat_dict = await asyncio.to_thread(
             search_only,
@@ -203,6 +217,10 @@ async def chat_completion(req: ChatCompletionRequest) -> ChatCompletionResponse 
         raise HTTPException(status_code=400, detail="messages can't be empty")
 
     query = req.messages[0].content
+    
+    # Validate query is not empty
+    if not query or not query.strip():
+        raise HTTPException(status_code=400, detail="Query cannot be empty")
 
     try:
         emb_model = emb_model_dict['emb_model']
@@ -212,6 +230,23 @@ async def chat_completion(req: ChatCompletionRequest) -> ChatCompletionResponse 
         llm_endpoint = llm_model_dict['llm_endpoint']
         reranker_model = reranker_model_dict['reranker_model']
         reranker_endpoint = reranker_model_dict['reranker_endpoint']
+        
+        # Validate query length
+        is_valid, error_msg = await asyncio.to_thread(
+            validate_query_length, query, emb_endpoint
+        )
+        if not is_valid:
+            # Return streaming error response for consistency
+            if req.stream:
+                async def stream_query_length_error():
+                    message = f"Your query is too long. Please shorten it and try again."
+                    yield f"data: {json.dumps({'choices': [{'delta': {'content': message}}]})}\n\n"
+                return StreamingResponse(stream_query_length_error(), media_type="text/event-stream")
+            else:
+                return JSONResponse(
+                    status_code=400,
+                    content={"error": error_msg}
+                )
         
         docs, perf_stat_dict = await asyncio.to_thread(
             search_only,
@@ -223,6 +258,7 @@ async def chat_completion(req: ChatCompletionRequest) -> ChatCompletionResponse 
             settings.num_chunks_post_reranker,
             vectorstore=vectorstore
         )
+        
     except db.VectorStoreNotReadyError as e:
         raise HTTPException(status_code=503, detail=str(e))
     except Exception as e:
