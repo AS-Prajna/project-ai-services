@@ -99,7 +99,7 @@ const AppHeader = (props: AppHeaderProps) => {
 
   return (
     <Theme theme="g100">
-      <Header aria-label="IBM Power Operations Platform">
+      <Header aria-label="IBM Open-Source AI Foundation for Power">
         {!minimal && (
           <HeaderMenuButton
             aria-label="Open menu"
@@ -113,7 +113,9 @@ const AppHeader = (props: AppHeaderProps) => {
           />
         )}
 
-        <HeaderName prefix="IBM">Power Operations Platform</HeaderName>
+        <HeaderName prefix="IBM">
+          Open-Source AI Foundation for Power
+        </HeaderName>
 
         {!minimal && (
           <HeaderGlobalBar>

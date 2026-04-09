@@ -5,7 +5,10 @@ import AuthLayout from "./layouts/AuthLayout";
 
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
-import ApplicationsListPage from "./pages/ApplicationsList";
+import AiDeploymentsPage from "./pages/AiDeployments";
+import DeployableArchitecturesPage from "./pages/DeployableArchitectures";
+import ServicesPage from "./pages/Services";
+import SolutionsAndUseCasesPage from "./pages/SolutionsAndUseCases";
 import { ProtectedRoute } from "@/components";
 
 function App() {
@@ -18,8 +21,17 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
             <Route
-              path={ROUTES.APPLICATIONS_LIST}
-              element={<ApplicationsListPage />}
+              path={ROUTES.AI_DEPLOYMENTS}
+              element={<AiDeploymentsPage />}
+            />
+            <Route
+              path={ROUTES.DEPLOYABLE_ARCHITECTURES}
+              element={<DeployableArchitecturesPage />}
+            />
+            <Route path={ROUTES.SERVICES} element={<ServicesPage />} />
+            <Route
+              path={ROUTES.SOLUTIONS_AND_USE_CASES}
+              element={<SolutionsAndUseCasesPage />}
             />
           </Route>
         </Route>

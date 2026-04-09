@@ -1,0 +1,87 @@
+@use "@carbon/react/scss/spacing";
+
+.card {
+  background-color: var(--cds-layer-01);
+  border: spacing.$spacing-01 solid var(--cds-border-subtle-01);
+  padding: spacing.$spacing-05;
+  display: flex;
+  flex-direction: column;
+  gap: spacing.$spacing-05;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: spacing.$spacing-03;
+  padding-bottom: spacing.$spacing-05;
+  border-bottom: spacing.$spacing-01 solid var(--cds-border-subtle-01);
+}
+
+.pictogram {
+  flex-shrink: 0;
+  color: var(--cds-link-primary);
+
+  svg {
+    display: block;
+  }
+}
+
+.titleSection {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.29;
+  color: var(--cds-link-primary);
+  margin: 0;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.category {
+  font-size: 0.75rem;
+  line-height: 1.33;
+  color: var(--cds-text-secondary);
+  margin: 0;
+}
+
+.description {
+  font-size: 0.875rem;
+  line-height: 1.29;
+  color: var(--cds-text-primary);
+  margin: 0;
+  flex: 1;
+}
+
+.tagsSection {
+  display: flex;
+  flex-direction: column;
+  gap: spacing.$spacing-03;
+  margin-top: auto;
+}
+
+.tagsHeading {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cds-text-secondary);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: spacing.$spacing-03;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-start;
+}
