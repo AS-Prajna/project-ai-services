@@ -1,4 +1,4 @@
-import { useReducer, useState } from "react";
+import { useReducer } from "react";
 import { PageHeader, NoDataEmptyState } from "@carbon/ibm-products";
 import {
   DataTable,
@@ -26,6 +26,8 @@ import {
   Tag,
   OverflowMenu,
   OverflowMenuItem,
+  MenuButton,
+  MenuItem,
 } from "@carbon/react";
 import {
   Filter,
@@ -37,7 +39,6 @@ import {
   ErrorFilled,
   InProgress,
   Delete,
-  ChevronDown,
 } from "@carbon/icons-react";
 import styles from "./AiDeployments.module.scss";
 import type { AiDeploymentRow } from "./types";
@@ -45,7 +46,6 @@ import { ACTION_TYPES, HEADERS, INITIAL_STATE, appReducer } from "./types";
 
 const AiDeploymentsPage = () => {
   const [state, dispatch] = useReducer(appReducer, INITIAL_STATE);
-  const [isDeployMenuOpen, setIsDeployMenuOpen] = useState(false);
 
   const handleDelete = async () => {
     if (!state.selectedRowId) {
@@ -239,7 +239,7 @@ const AiDeploymentsPage = () => {
             >
               {({
                 rows,
-                headers: _headers,
+                headers,
                 getHeaderProps,
                 getRowProps,
                 getCellProps,
@@ -399,45 +399,21 @@ const AiDeploymentsPage = () => {
                             </div>
                           </li>
                         </OverflowMenu>
-                        <div className={styles.deployButtonContainer}>
-                          <Button
-                            size="lg"
-                            kind="primary"
-                            renderIcon={ChevronDown}
-                            onClick={() =>
-                              setIsDeployMenuOpen(!isDeployMenuOpen)
-                            }
-                          >
-                            Deploy
-                          </Button>
-                          {isDeployMenuOpen && (
-                            <>
-                              <div
-                                className={styles.deployBackdrop}
-                                onClick={() => setIsDeployMenuOpen(false)}
-                              />
-                              <div className={styles.deployMenu}>
-                                <div
-                                  className={styles.deployMenuItem}
-                                  onClick={() => {
-                                    console.log("Deploy Architecture");
-                                    setIsDeployMenuOpen(false);
-                                  }}
-                                >
-                                  Architecture
-                                </div>
-                                <div
-                                  className={styles.deployMenuItem}
-                                  onClick={() => {
-                                    console.log("Deploy Service");
-                                    setIsDeployMenuOpen(false);
-                                  }}
-                                >
-                                  Service
-                                </div>
-                              </div>
-                            </>
-                          )}
+                        <div className={styles.deployButtonWrapper}>
+                          <MenuButton label="Deploy" kind="primary" size="lg">
+                            <MenuItem
+                              label="Architecture"
+                              onClick={() => {
+                                console.log("Deploy Architecture");
+                              }}
+                            />
+                            <MenuItem
+                              label="Service"
+                              onClick={() => {
+                                console.log("Deploy Service");
+                              }}
+                            />
+                          </MenuButton>
                         </div>
                       </TableToolbarContent>
                     </TableToolbar>
@@ -458,7 +434,7 @@ const AiDeploymentsPage = () => {
                       <Table {...getTableProps()}>
                         <TableHead>
                           <TableRow>
-                            {HEADERS.map((header) => {
+                            {headers.map((header) => {
                               const { key, ...rest } = getHeaderProps({
                                 header,
                               });
@@ -485,11 +461,7 @@ const AiDeploymentsPage = () => {
 
                                   if (cell.info.header === "actions") {
                                     return (
-                                      <TableCell
-                                        key={cellKey}
-                                        {...cellProps}
-                                        className={styles.actionsCell}
-                                      >
+                                      <TableCell key={cellKey} {...cellProps}>
                                         <OverflowMenu
                                           size="lg"
                                           flipped

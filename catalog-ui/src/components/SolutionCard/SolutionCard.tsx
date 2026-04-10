@@ -1,15 +1,13 @@
-import { Button, Tag } from "@carbon/react";
-import { ArrowRight } from "@carbon/icons-react";
-import Agriculture from "@carbon/pictograms-react/lib/agriculture";
-import Banking from "@carbon/pictograms-react/lib/banking";
-import AppDeveloper from "@carbon/pictograms-react/lib/app--developer";
-import PlanningAnalytics from "@carbon/pictograms-react/lib/planning--analytics";
-import MedicalStaff from "@carbon/pictograms-react/lib/medical--staff";
-import Insurance from "@carbon/pictograms-react/lib/insurance";
-import ItInfrastructure from "@carbon/pictograms-react/lib/it--infrastructure";
-import CloudBuilderProfessionalServices from "@carbon/pictograms-react/lib/cloud--builder--professional--services";
-import Public from "@carbon/pictograms-react/lib/public";
-import RealEstate from "@carbon/pictograms-react/lib/real-estate";
+import { Tag, Tooltip } from "@carbon/react";
+import {
+  ArrowRight,
+  AgricultureAnalytics,
+  PiggyBank,
+  IbmPlanningAnalytics,
+  Umbrella,
+  Help,
+  Badge,
+} from "@carbon/icons-react";
 import styles from "./SolutionCard.module.scss";
 
 interface SolutionCardProps {
@@ -21,20 +19,20 @@ interface SolutionCardProps {
   onExplore: (id: string) => void;
 }
 
-const categoryPictograms: Record<
+const categoryIcons: Record<
   string,
   React.ComponentType<{ size?: string | number }>
 > = {
-  Agriculture: Agriculture,
-  "Banking and Finance": Banking,
-  "Dev operations": AppDeveloper,
-  "Enterprise resource planning": PlanningAnalytics,
-  Healthcare: MedicalStaff,
-  Insurance: Insurance,
-  "IT operations": ItInfrastructure,
-  "Professional services": CloudBuilderProfessionalServices,
-  "Public sector": Public,
-  "Real estates": RealEstate,
+  Agriculture: AgricultureAnalytics,
+  "Banking and Finance": PiggyBank,
+  "Dev operations": Help,
+  "Enterprise resource planning": IbmPlanningAnalytics,
+  Healthcare: Help,
+  Insurance: Umbrella,
+  "IT operations": Help,
+  "Professional services": Help,
+  "Public sector": Help,
+  "Real estates": Help,
 };
 
 const SolutionCard = ({
@@ -45,50 +43,38 @@ const SolutionCard = ({
   category,
   onExplore,
 }: SolutionCardProps) => {
-  const PictogramComponent = categoryPictograms[category] || Agriculture;
-  const maxVisibleTags = 4;
-  const visibleTags = tags.slice(0, maxVisibleTags);
-  const remainingCount = tags.length - maxVisibleTags;
+  const IconComponent = categoryIcons[category] || AgricultureAnalytics;
+  const primaryTag = tags[0] || "Digital assistant";
 
   return (
     <div className={styles.card}>
-      <div className={styles.header}>
-        <div className={styles.pictogram}>
-          <PictogramComponent size={36} />
+      <div className={styles.cardHeader}>
+        <div className={styles.iconContainer}>
+          <IconComponent size={32} />
         </div>
-        <div className={styles.titleSection}>
-          <h3 className={styles.title}>{title}</h3>
-          <p className={styles.category}>{category}</p>
-        </div>
+        <Tooltip align="top" label="IBM certified">
+          <button className={styles.indicatorIcon} type="button">
+            <Badge size={16} />
+          </button>
+        </Tooltip>
       </div>
 
-      <p className={styles.description}>{description}</p>
-
-      <div className={styles.tagsSection}>
-        <h4 className={styles.tagsHeading}>Reference architectures</h4>
-        <div className={styles.tags}>
-          {visibleTags.map((tag, index) => (
-            <Tag key={index} type="gray" size="sm">
-              {tag}
-            </Tag>
-          ))}
-          {remainingCount > 0 && (
-            <Tag type="gray" size="sm">
-              +{remainingCount}
-            </Tag>
-          )}
-        </div>
+      <div className={styles.content}>
+        <p className={styles.category}>{category}</p>
+        <h3 className={styles.title}>{title}</h3>
+        <p className={styles.description}>{description}</p>
       </div>
 
-      <div className={styles.actions}>
-        <Button
-          kind="tertiary"
+      <div className={styles.footer}>
+        <Tag
+          type="gray"
           size="sm"
-          renderIcon={ArrowRight}
+          className={styles.actionTag}
           onClick={() => onExplore(id)}
         >
-          Explore
-        </Button>
+          {primaryTag}
+        </Tag>
+        <ArrowRight size={20} className={styles.arrowIcon} />
       </div>
     </div>
   );

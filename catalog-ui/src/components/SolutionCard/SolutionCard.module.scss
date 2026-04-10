@@ -1,4 +1,5 @@
 @use "@carbon/react/scss/spacing";
+@use "@carbon/react/scss/type";
 
 .card {
   background-color: var(--cds-layer-01);
@@ -8,80 +9,90 @@
   flex-direction: column;
   gap: spacing.$spacing-05;
   height: 100%;
+  position: relative;
 }
 
-.header {
+.cardHeader {
   display: flex;
+  justify-content: space-between;
   align-items: flex-start;
-  gap: spacing.$spacing-03;
-  padding-bottom: spacing.$spacing-05;
-  border-bottom: spacing.$spacing-01 solid var(--cds-border-subtle-01);
 }
 
-.pictogram {
+.iconContainer {
   flex-shrink: 0;
-  color: var(--cds-link-primary);
+  color: var(--cds-icon-primary);
 
   svg {
     display: block;
   }
 }
 
-.titleSection {
-  flex: 1;
-  min-width: 0;
-}
-
-.title {
-  font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 1.29;
-  color: var(--cds-link-primary);
-  margin: 0;
+.indicatorIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
   cursor: pointer;
+  color: var(--cds-support-success);
+  position: relative;
+  z-index: 1;
 
   &:hover {
-    text-decoration: underline;
+    opacity: 0.8;
+  }
+
+  svg {
+    fill: var(--cds-support-success);
   }
 }
 
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: spacing.$spacing-03;
+  flex: 1;
+}
+
 .category {
-  font-size: 0.75rem;
-  line-height: 1.33;
+  @include type.type-style("label-01");
   color: var(--cds-text-secondary);
+  margin: 0;
+}
+
+.title {
+  @include type.type-style("heading-compact-01");
+  color: var(--cds-text-primary);
   margin: 0;
 }
 
 .description {
-  font-size: 0.875rem;
-  line-height: 1.29;
+  @include type.type-style("body-compact-01");
   color: var(--cds-text-primary);
   margin: 0;
-  flex: 1;
+  line-height: 1.5;
 }
 
-.tagsSection {
+.footer {
   display: flex;
-  flex-direction: column;
-  gap: spacing.$spacing-03;
+  justify-content: space-between;
+  align-items: center;
   margin-top: auto;
 }
 
-.tagsHeading {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--cds-text-secondary);
-  margin: 0;
-  letter-spacing: 0.02em;
+.actionTag {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--cds-layer-hover-01);
+  }
 }
 
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: spacing.$spacing-03;
+.arrowIcon {
+  color: var(--cds-icon-primary);
+  flex-shrink: 0;
 }
 
-.actions {
-  display: flex;
-  justify-content: flex-start;
-}
+// Made with Bob

@@ -2,7 +2,7 @@
 
 .pageContent {
   padding: 0 0 spacing.$spacing-07 0;
-  margin-top: spacing.$spacing-05;
+  margin-top: spacing.$spacing-07;
 }
 
 .sidebarColumn {
@@ -25,7 +25,8 @@
 .cardsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-  gap: spacing.$spacing-05;
+  column-gap: spacing.$spacing-07;
+  row-gap: spacing.$spacing-05;
 }
 
 .emptyState {

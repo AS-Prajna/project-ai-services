@@ -2,10 +2,6 @@
 @use "@carbon/react/scss/colors";
 @use "@carbon/react/scss/theme";
 
-.header {
-  font-size: large;
-}
-
 :global(.cds--header) {
   background-color: colors.$black-100 !important;
   border-bottom: none !important;
@@ -109,7 +105,7 @@
 }
 
 :global(.cds--header-panel) {
-  position: relatives !important;
+  position: relative !important;
   bottom: auto !important;
   right: 0 !important;
   left: auto !important;

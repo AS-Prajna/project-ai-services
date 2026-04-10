@@ -3,12 +3,6 @@
 @use "@carbon/react/scss/spacing";
 @use "@carbon/react/scss/theme";
 
-.navLink {
-  outline: none !important;
-  color: unset;
-  text-decoration: none !important;
-}
-
 .sideNavItem:active .sideNavItem:focus {
   border-left: spacing.$spacing-02 solid theme.$link-primary;
   outline: none !important;
