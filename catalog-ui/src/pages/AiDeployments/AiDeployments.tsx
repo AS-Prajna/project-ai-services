@@ -153,21 +153,31 @@ const AiDeploymentsPage = () => {
     }
   };
 
-  const filteredRows = state.rowsData.filter((row) =>
-    [
+  const filteredRows = state.rowsData.filter((row) => {
+    const matchesSearch = [
       row.name,
       row.status,
       row.avgUsage,
       row.uptime,
-      row.accuracy,
-      row.owner,
       row.type,
       row.messages,
     ]
       .join(" ")
       .toLowerCase()
-      .includes(state.search.toLowerCase()),
-  );
+      .includes(state.search.toLowerCase());
+
+    // Apply architecture filter (if any selected)
+    const matchesArchitecture =
+      state.filters.architectures.length === 0 ||
+      state.filters.architectures.includes(row.type);
+
+    // Apply service filter (if any selected)
+    const matchesService =
+      state.filters.services.length === 0 ||
+      state.filters.services.includes(row.type);
+
+    return matchesSearch && matchesArchitecture && matchesService;
+  });
 
   const paginatedRows = filteredRows.slice(
     (state.page - 1) * state.pageSize,
@@ -232,7 +242,7 @@ const AiDeploymentsPage = () => {
                 (h) =>
                   h.key === "actions" ||
                   state.visibleColumns[
-                    h.key as keyof typeof state.visibleColumns
+                  h.key as keyof typeof state.visibleColumns
                   ],
               )}
               size="lg"
@@ -263,13 +273,107 @@ const AiDeploymentsPage = () => {
                       />
 
                       <TableToolbarContent>
-                        <Button
-                          hasIconOnly
-                          kind="ghost"
+                        <OverflowMenu
                           renderIcon={Filter}
-                          iconDescription="Filter"
+                          iconDescription="Filter rows"
+                          aria-label="Filter rows"
                           size="lg"
-                        />
+                          flipped
+                        >
+                          <li className={styles.overflowMenuContent} role="none">
+                            <h6 className={styles.overflowMenuHeading}>
+                              Filter architectures
+                            </h6>
+                            <CheckboxGroup legendText="">
+                              <Checkbox
+                                labelText="Digital assistant"
+                                id="filter-arch-digital"
+                                checked={state.pendingFilters.architectures.includes("Digital assistant")}
+                                onChange={() =>
+                                  dispatch({
+                                    type: ACTION_TYPES.SET_PENDING_FILTER,
+                                    payload: { category: "architectures", value: "Digital assistant" },
+                                  })
+                                }
+                              />
+                              <Checkbox
+                                labelText="Deep process"
+                                id="filter-arch-deep"
+                                checked={state.pendingFilters.architectures.includes("Deep process")}
+                                onChange={() =>
+                                  dispatch({
+                                    type: ACTION_TYPES.SET_PENDING_FILTER,
+                                    payload: { category: "architectures", value: "Deep process" },
+                                  })
+                                }
+                              />
+                              <Checkbox
+                                labelText="Summary"
+                                id="filter-arch-summary"
+                                checked={state.pendingFilters.architectures.includes("Summary")}
+                                onChange={() =>
+                                  dispatch({
+                                    type: ACTION_TYPES.SET_PENDING_FILTER,
+                                    payload: { category: "architectures", value: "Summary" },
+                                  })
+                                }
+                              />
+                            </CheckboxGroup>
+                          </li>
+                          <li className={styles.overflowMenuContent} role="none">
+                            <h6 className={styles.overflowMenuHeading}>
+                              Filter services
+                            </h6>
+                            <CheckboxGroup legendText="">
+                              <Checkbox
+                                labelText="Translation"
+                                id="filter-service-translation"
+                                checked={state.pendingFilters.services.includes("Translation")}
+                                onChange={() =>
+                                  dispatch({
+                                    type: ACTION_TYPES.SET_PENDING_FILTER,
+                                    payload: { category: "services", value: "Translation" },
+                                  })
+                                }
+                              />
+                              <Checkbox
+                                labelText="Question and an..."
+                                id="filter-service-question"
+                                checked={state.pendingFilters.services.includes("Question and an...")}
+                                onChange={() =>
+                                  dispatch({
+                                    type: ACTION_TYPES.SET_PENDING_FILTER,
+                                    payload: { category: "services", value: "Question and an..." },
+                                  })
+                                }
+                              />
+                            </CheckboxGroup>
+                            <div className={styles.overflowMenuActions}>
+                              <Button
+                                kind="secondary"
+                                size="sm"
+                                onClick={() =>
+                                  dispatch({
+                                    type: ACTION_TYPES.RESET_FILTERS,
+                                  })
+                                }
+                              >
+                                Reset filters
+                              </Button>
+                              <Button
+                                kind="primary"
+                                size="sm"
+                                onClick={() =>
+                                  dispatch({
+                                    type: ACTION_TYPES.APPLY_FILTERS,
+                                  })
+                                }
+                              >
+                                Apply filters
+                              </Button>
+                            </div>
+                          </li>
+                        </OverflowMenu>
                         <Button
                           hasIconOnly
                           kind="ghost"
@@ -286,10 +390,9 @@ const AiDeploymentsPage = () => {
                           aria-label="Edit columns"
                           size="lg"
                           flipped
-                          className={styles.columnFilterOverflow}
                         >
-                          <li className={styles.columnFilterMenu} role="none">
-                            <h6 className={styles.columnFilterHeading}>
+                          <li className={styles.overflowMenuContent} role="none">
+                            <h6 className={styles.overflowMenuHeading}>
                               Edit columns
                             </h6>
                             <CheckboxGroup legendText="">
@@ -339,28 +442,6 @@ const AiDeploymentsPage = () => {
                                 }
                               />
                               <Checkbox
-                                labelText="Accuracy"
-                                id="column-accuracy"
-                                checked={state.visibleColumns.accuracy}
-                                onChange={() =>
-                                  dispatch({
-                                    type: ACTION_TYPES.TOGGLE_COLUMN_VISIBILITY,
-                                    payload: "accuracy",
-                                  })
-                                }
-                              />
-                              <Checkbox
-                                labelText="Owner"
-                                id="column-owner"
-                                checked={state.visibleColumns.owner}
-                                onChange={() =>
-                                  dispatch({
-                                    type: ACTION_TYPES.TOGGLE_COLUMN_VISIBILITY,
-                                    payload: "owner",
-                                  })
-                                }
-                              />
-                              <Checkbox
                                 labelText="Type"
                                 id="column-type"
                                 checked={state.visibleColumns.type}
@@ -383,11 +464,11 @@ const AiDeploymentsPage = () => {
                                 }
                               />
                             </CheckboxGroup>
-                            <div className={styles.columnFilterResetContainer}>
+                            <div className={styles.overflowMenuActions}>
                               <Button
                                 kind="secondary"
                                 size="sm"
-                                className={styles.columnFilterResetButton}
+                                className={styles.overflowMenuButton}
                                 onClick={() =>
                                   dispatch({
                                     type: ACTION_TYPES.RESET_COLUMN_VISIBILITY,
@@ -400,7 +481,7 @@ const AiDeploymentsPage = () => {
                           </li>
                         </OverflowMenu>
                         <div className={styles.deployButtonWrapper}>
-                          <MenuButton label="Deploy" kind="primary" size="lg">
+                          <MenuButton label="Deploy" kind="primary" size="lg" menuAlignment="bottom-end">
                             <MenuItem
                               label="Architecture"
                               onClick={() => {
@@ -468,24 +549,6 @@ const AiDeploymentsPage = () => {
                                           aria-label="Actions"
                                         >
                                           <OverflowMenuItem
-                                            itemText="Ingest data"
-                                            onClick={() => {
-                                              console.log(
-                                                "Ingest data for",
-                                                row.id,
-                                              );
-                                            }}
-                                          />
-                                          <OverflowMenuItem
-                                            itemText="Test deployment"
-                                            onClick={() => {
-                                              console.log(
-                                                "Test deployment for",
-                                                row.id,
-                                              );
-                                            }}
-                                          />
-                                          <OverflowMenuItem
                                             itemText={
                                               <div
                                                 className={
@@ -497,7 +560,6 @@ const AiDeploymentsPage = () => {
                                               </div>
                                             }
                                             isDelete
-                                            hasDivider
                                             onClick={() => {
                                               dispatch({
                                                 type: ACTION_TYPES.OPEN_DELETE_DIALOG,
@@ -526,22 +588,27 @@ const AiDeploymentsPage = () => {
                                       | "gray"
                                       | "blue" = "gray";
                                     let StatusIcon = PauseOutline;
+                                    let iconClassName = styles.statusTagSecondary;
 
                                     if (status === "Running") {
                                       tagType = "green";
                                       StatusIcon = CheckmarkFilled;
+                                      iconClassName = styles.statusTagSuccess;
                                     } else if (status === "Error") {
                                       tagType = "red";
                                       StatusIcon = ErrorFilled;
+                                      iconClassName = styles.statusTagError;
                                     } else if (status === "Stopped") {
                                       tagType = "gray";
                                       StatusIcon = PauseOutline;
+                                      iconClassName = styles.statusTagSecondary;
                                     } else if (
                                       status === "Deploying..." ||
                                       status === "Deleting..."
                                     ) {
                                       tagType = "blue";
                                       StatusIcon = InProgress;
+                                      iconClassName = styles.statusTagInfo;
                                     }
 
                                     return (
@@ -550,6 +617,7 @@ const AiDeploymentsPage = () => {
                                           type={tagType}
                                           size="md"
                                           renderIcon={StatusIcon}
+                                          className={iconClassName}
                                         >
                                           {status}
                                         </Tag>
@@ -657,9 +725,9 @@ const AiDeploymentsPage = () => {
                       <strong>
                         {state.selectedRowId
                           ? state.rowsData.find(
-                              (r: AiDeploymentRow) =>
-                                r.id === state.selectedRowId,
-                            )?.name
+                            (r: AiDeploymentRow) =>
+                              r.id === state.selectedRowId,
+                          )?.name
                           : ""}
                       </strong>
                     }

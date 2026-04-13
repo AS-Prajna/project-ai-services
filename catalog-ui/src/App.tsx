@@ -6,7 +6,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import AiDeploymentsPage from "./pages/AiDeployments";
-import DeployableArchitecturesPage from "./pages/DeployableArchitectures";
+import ArchitecturesPage from "./pages/Architectures";
 import ServicesPage from "./pages/Services";
 import SolutionsAndUseCasesPage from "./pages/SolutionsAndUseCases";
 import { ProtectedRoute } from "@/components";
@@ -25,8 +25,8 @@ function App() {
               element={<AiDeploymentsPage />}
             />
             <Route
-              path={ROUTES.DEPLOYABLE_ARCHITECTURES}
-              element={<DeployableArchitecturesPage />}
+              path={ROUTES.ARCHITECTURES}
+              element={<ArchitecturesPage />}
             />
             <Route path={ROUTES.SERVICES} element={<ServicesPage />} />
             <Route

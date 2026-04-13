@@ -6,8 +6,6 @@ export interface AiDeploymentRow {
   status: "Deploying..." | "Deleting..." | "Error" | "Stopped" | "Running";
   avgUsage: string;
   uptime: string;
-  accuracy: string;
-  owner: string;
   type: string;
   messages: string;
   actions: string;
@@ -33,6 +31,14 @@ export interface AppState {
   exportErrorMessage: string;
   hasError: boolean;
   visibleColumns: Record<string, boolean>;
+  filters: {
+    architectures: string[];
+    services: string[];
+  };
+  pendingFilters: {
+    architectures: string[];
+    services: string[];
+  };
 }
 
 export const ACTION_TYPES = {
@@ -55,6 +61,9 @@ export const ACTION_TYPES = {
   SET_SELECTED_ROW_ID: "SET_SELECTED_ROW_ID",
   TOGGLE_COLUMN_VISIBILITY: "TOGGLE_COLUMN_VISIBILITY",
   RESET_COLUMN_VISIBILITY: "RESET_COLUMN_VISIBILITY",
+  SET_PENDING_FILTER: "SET_PENDING_FILTER",
+  APPLY_FILTERS: "APPLY_FILTERS",
+  RESET_FILTERS: "RESET_FILTERS",
 } as const;
 
 export type AppAction =
@@ -66,9 +75,9 @@ export type AppAction =
   | { type: typeof ACTION_TYPES.SET_CONFIRMED; payload: boolean }
   | { type: typeof ACTION_TYPES.DELETE_ROW; payload: string }
   | {
-      type: typeof ACTION_TYPES.SHOW_ERROR;
-      payload: { message: string; rowName?: string };
-    }
+    type: typeof ACTION_TYPES.SHOW_ERROR;
+    payload: { message: string; rowName?: string };
+  }
   | { type: typeof ACTION_TYPES.HIDE_ERROR }
   | { type: typeof ACTION_TYPES.SET_IS_DELETING; payload: boolean }
   | { type: typeof ACTION_TYPES.OPEN_EXPORT_DIALOG }
@@ -79,7 +88,10 @@ export type AppAction =
   | { type: typeof ACTION_TYPES.CLEAR_EXPORT_ERROR }
   | { type: typeof ACTION_TYPES.SET_SELECTED_ROW_ID; payload: string | null }
   | { type: typeof ACTION_TYPES.TOGGLE_COLUMN_VISIBILITY; payload: string }
-  | { type: typeof ACTION_TYPES.RESET_COLUMN_VISIBILITY };
+  | { type: typeof ACTION_TYPES.RESET_COLUMN_VISIBILITY }
+  | { type: typeof ACTION_TYPES.SET_PENDING_FILTER; payload: { category: 'architectures' | 'services'; value: string } }
+  | { type: typeof ACTION_TYPES.APPLY_FILTERS }
+  | { type: typeof ACTION_TYPES.RESET_FILTERS };
 
 // Constants
 export const HEADERS: DataTableHeader[] = [
@@ -87,8 +99,6 @@ export const HEADERS: DataTableHeader[] = [
   { header: "Status", key: "status" },
   { header: "Avg usage", key: "avgUsage" },
   { header: "Uptime", key: "uptime" },
-  { header: "Accuracy", key: "accuracy" },
-  { header: "Owner", key: "owner" },
   { header: "Type", key: "type" },
   { header: "Messages", key: "messages" },
   { header: "", key: "actions" },
@@ -110,8 +120,6 @@ export const MOCK_ROWS: AiDeploymentRow[] = [
     status: "Deploying...",
     avgUsage: "30s ago",
     uptime: "Mar 4, 2026",
-    accuracy: "95%",
-    owner: "susan[j]",
     type: "Digital assistant",
     messages: "Error message goes here...",
     actions: "actions",
@@ -122,8 +130,6 @@ export const MOCK_ROWS: AiDeploymentRow[] = [
     status: "Deleting...",
     avgUsage: "840K/day",
     uptime: "2 days",
-    accuracy: "92%",
-    owner: "susan[j]",
     type: "Deep process",
     messages: "Deploying [service]...",
     actions: "actions",
@@ -134,8 +140,6 @@ export const MOCK_ROWS: AiDeploymentRow[] = [
     status: "Error",
     avgUsage: "10K/day",
     uptime: "Mar 4, 2026",
-    accuracy: "95%",
-    owner: "ramseedickey",
     type: "Digital assistant",
     messages: "",
     actions: "actions",
@@ -146,8 +150,6 @@ export const MOCK_ROWS: AiDeploymentRow[] = [
     status: "Running",
     avgUsage: "280K/day",
     uptime: "Mar 4, 2026",
-    accuracy: "95%",
-    owner: "susan[j]",
     type: "Summary",
     messages: "",
     actions: "actions",
@@ -158,8 +160,6 @@ export const MOCK_ROWS: AiDeploymentRow[] = [
     status: "Running",
     avgUsage: "180/day",
     uptime: "12 hours",
-    accuracy: "95%",
-    owner: "fernando",
     type: "Translation",
     messages: "Ingest data",
     actions: "actions",
@@ -170,8 +170,6 @@ export const MOCK_ROWS: AiDeploymentRow[] = [
     status: "Stopped",
     avgUsage: "114K/day",
     uptime: "12 hours",
-    accuracy: "95%",
-    owner: "ryan@digit",
     type: "Digital assistant",
     messages: "",
     actions: "actions",
@@ -182,8 +180,6 @@ export const MOCK_ROWS: AiDeploymentRow[] = [
     status: "Running",
     avgUsage: "290K",
     uptime: "Jan 2, 2026",
-    accuracy: "95%",
-    owner: "ryan@digit",
     type: "Question and an...",
     messages: "",
     actions: "actions",
@@ -194,8 +190,6 @@ export const MOCK_ROWS: AiDeploymentRow[] = [
     status: "Running",
     avgUsage: "1.1M/day",
     uptime: "25 minutes",
-    accuracy: "95%",
-    owner: "ramseedickey",
     type: "Digital assistant",
     messages: "",
     actions: "actions",
@@ -206,8 +200,6 @@ export const MOCK_ROWS: AiDeploymentRow[] = [
     status: "Running",
     avgUsage: "450K/day",
     uptime: "Nov 9, 2025",
-    accuracy: "95%",
-    owner: "ramseedickey",
     type: "Digital assistant",
     messages: "",
     actions: "actions",
@@ -239,10 +231,16 @@ export const INITIAL_STATE: AppState = {
     status: true,
     avgUsage: true,
     uptime: true,
-    accuracy: true,
-    owner: true,
     type: true,
     messages: true,
+  },
+  filters: {
+    architectures: [],
+    services: [],
+  },
+  pendingFilters: {
+    architectures: [],
+    services: [],
   },
 };
 
@@ -360,10 +358,46 @@ export const appReducer = (state: AppState, action: AppAction): AppState => {
           status: true,
           avgUsage: true,
           uptime: true,
-          accuracy: true,
-          owner: true,
           type: true,
           messages: true,
+        },
+      };
+
+    case ACTION_TYPES.SET_PENDING_FILTER: {
+      const { category, value } = action.payload;
+      const currentFilters = state.pendingFilters[category];
+      const newFilters = currentFilters.includes(value)
+        ? currentFilters.filter((v) => v !== value)
+        : [...currentFilters, value];
+
+      return {
+        ...state,
+        pendingFilters: {
+          ...state.pendingFilters,
+          [category]: newFilters,
+        },
+      };
+    }
+
+    case ACTION_TYPES.APPLY_FILTERS:
+      return {
+        ...state,
+        filters: {
+          architectures: [...state.pendingFilters.architectures],
+          services: [...state.pendingFilters.services],
+        },
+      };
+
+    case ACTION_TYPES.RESET_FILTERS:
+      return {
+        ...state,
+        filters: {
+          architectures: [],
+          services: [],
+        },
+        pendingFilters: {
+          architectures: [],
+          services: [],
         },
       };
 

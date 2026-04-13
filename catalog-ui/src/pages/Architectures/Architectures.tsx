@@ -12,10 +12,10 @@ import {
 } from "@carbon/react";
 import { ArrowRight } from "@carbon/icons-react";
 import { CatalogCard } from "@/components";
-import styles from "./DeployableArchitectures.module.scss";
+import styles from "./Architectures.module.scss";
 import { ACTION_TYPES, INITIAL_STATE, pageReducer } from "./types";
 
-const DeployableArchitecturesPage = () => {
+const ArchitecturesPage = () => {
   const [state, dispatch] = useReducer(pageReducer, INITIAL_STATE);
 
   const handleProviderChange = (checked: boolean, value: string) => {
@@ -54,7 +54,7 @@ const DeployableArchitecturesPage = () => {
   return (
     <>
       <PageHeader
-        title={{ text: "Deployable architectures" }}
+        title={{ text: "Architectures" }}
         subtitle="Production-ready AI solutions"
         pageActions={[
           {
@@ -224,4 +224,4 @@ const DeployableArchitecturesPage = () => {
   );
 };
 
-export default DeployableArchitecturesPage;
+export default ArchitecturesPage;

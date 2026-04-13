@@ -50,10 +50,10 @@ const Navbar = (props: NavbarProps) => {
 
           <SideNavMenuItem
             as={NavLink}
-            to="/deployable-architectures"
+            to="/architectures"
             className={styles.sideNavItem}
           >
-            Deployable architectures
+            Architectures
           </SideNavMenuItem>
 
           <SideNavMenuItem
