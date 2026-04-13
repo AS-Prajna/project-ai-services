@@ -26,7 +26,8 @@
       padding-left: 0 !important;
       width: spacing.$spacing-09;
       background-color: var(--cds-layer-accent);
-      box-shadow: calc(-1 * spacing.$spacing-01) 0 spacing.$spacing-02 rgba(0, 0, 0, 0.05);
+      box-shadow: calc(-1 * spacing.$spacing-01) 0 spacing.$spacing-02
+        rgba(0, 0, 0, 0.05);
     }
 
     :global(td:last-child) {
@@ -36,7 +37,8 @@
       padding-right: spacing.$spacing-03 !important;
       padding-left: 0 !important;
       background-color: var(--cds-layer);
-      box-shadow: calc(-1 * spacing.$spacing-01) 0 spacing.$spacing-02 rgba(0, 0, 0, 0.05);
+      box-shadow: calc(-1 * spacing.$spacing-01) 0 spacing.$spacing-02
+        rgba(0, 0, 0, 0.05);
     }
 
     :global(tr:hover td:last-child) {
@@ -83,7 +85,11 @@
   border: none;
 }
 
-:global(.cds--checkbox-wrapper input:focus:not(:focus-visible) + .cds--checkbox-label::before) {
+:global(
+  .cds--checkbox-wrapper
+    input:focus:not(:focus-visible)
+    + .cds--checkbox-label::before
+) {
   outline: none !important;
   box-shadow: none !important;
 }

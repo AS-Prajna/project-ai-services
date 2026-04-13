@@ -75,9 +75,9 @@ export type AppAction =
   | { type: typeof ACTION_TYPES.SET_CONFIRMED; payload: boolean }
   | { type: typeof ACTION_TYPES.DELETE_ROW; payload: string }
   | {
-    type: typeof ACTION_TYPES.SHOW_ERROR;
-    payload: { message: string; rowName?: string };
-  }
+      type: typeof ACTION_TYPES.SHOW_ERROR;
+      payload: { message: string; rowName?: string };
+    }
   | { type: typeof ACTION_TYPES.HIDE_ERROR }
   | { type: typeof ACTION_TYPES.SET_IS_DELETING; payload: boolean }
   | { type: typeof ACTION_TYPES.OPEN_EXPORT_DIALOG }
@@ -89,7 +89,10 @@ export type AppAction =
   | { type: typeof ACTION_TYPES.SET_SELECTED_ROW_ID; payload: string | null }
   | { type: typeof ACTION_TYPES.TOGGLE_COLUMN_VISIBILITY; payload: string }
   | { type: typeof ACTION_TYPES.RESET_COLUMN_VISIBILITY }
-  | { type: typeof ACTION_TYPES.SET_PENDING_FILTER; payload: { category: 'architectures' | 'services'; value: string } }
+  | {
+      type: typeof ACTION_TYPES.SET_PENDING_FILTER;
+      payload: { category: "architectures" | "services"; value: string };
+    }
   | { type: typeof ACTION_TYPES.APPLY_FILTERS }
   | { type: typeof ACTION_TYPES.RESET_FILTERS };
 

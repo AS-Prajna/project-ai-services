@@ -242,7 +242,7 @@ const AiDeploymentsPage = () => {
                 (h) =>
                   h.key === "actions" ||
                   state.visibleColumns[
-                  h.key as keyof typeof state.visibleColumns
+                    h.key as keyof typeof state.visibleColumns
                   ],
               )}
               size="lg"
@@ -280,7 +280,10 @@ const AiDeploymentsPage = () => {
                           size="lg"
                           flipped
                         >
-                          <li className={styles.overflowMenuContent} role="none">
+                          <li
+                            className={styles.overflowMenuContent}
+                            role="none"
+                          >
                             <h6 className={styles.overflowMenuHeading}>
                               Filter architectures
                             </h6>
@@ -288,39 +291,57 @@ const AiDeploymentsPage = () => {
                               <Checkbox
                                 labelText="Digital assistant"
                                 id="filter-arch-digital"
-                                checked={state.pendingFilters.architectures.includes("Digital assistant")}
+                                checked={state.pendingFilters.architectures.includes(
+                                  "Digital assistant",
+                                )}
                                 onChange={() =>
                                   dispatch({
                                     type: ACTION_TYPES.SET_PENDING_FILTER,
-                                    payload: { category: "architectures", value: "Digital assistant" },
+                                    payload: {
+                                      category: "architectures",
+                                      value: "Digital assistant",
+                                    },
                                   })
                                 }
                               />
                               <Checkbox
                                 labelText="Deep process"
                                 id="filter-arch-deep"
-                                checked={state.pendingFilters.architectures.includes("Deep process")}
+                                checked={state.pendingFilters.architectures.includes(
+                                  "Deep process",
+                                )}
                                 onChange={() =>
                                   dispatch({
                                     type: ACTION_TYPES.SET_PENDING_FILTER,
-                                    payload: { category: "architectures", value: "Deep process" },
+                                    payload: {
+                                      category: "architectures",
+                                      value: "Deep process",
+                                    },
                                   })
                                 }
                               />
                               <Checkbox
                                 labelText="Summary"
                                 id="filter-arch-summary"
-                                checked={state.pendingFilters.architectures.includes("Summary")}
+                                checked={state.pendingFilters.architectures.includes(
+                                  "Summary",
+                                )}
                                 onChange={() =>
                                   dispatch({
                                     type: ACTION_TYPES.SET_PENDING_FILTER,
-                                    payload: { category: "architectures", value: "Summary" },
+                                    payload: {
+                                      category: "architectures",
+                                      value: "Summary",
+                                    },
                                   })
                                 }
                               />
                             </CheckboxGroup>
                           </li>
-                          <li className={styles.overflowMenuContent} role="none">
+                          <li
+                            className={styles.overflowMenuContent}
+                            role="none"
+                          >
                             <h6 className={styles.overflowMenuHeading}>
                               Filter services
                             </h6>
@@ -328,22 +349,32 @@ const AiDeploymentsPage = () => {
                               <Checkbox
                                 labelText="Translation"
                                 id="filter-service-translation"
-                                checked={state.pendingFilters.services.includes("Translation")}
+                                checked={state.pendingFilters.services.includes(
+                                  "Translation",
+                                )}
                                 onChange={() =>
                                   dispatch({
                                     type: ACTION_TYPES.SET_PENDING_FILTER,
-                                    payload: { category: "services", value: "Translation" },
+                                    payload: {
+                                      category: "services",
+                                      value: "Translation",
+                                    },
                                   })
                                 }
                               />
                               <Checkbox
                                 labelText="Question and an..."
                                 id="filter-service-question"
-                                checked={state.pendingFilters.services.includes("Question and an...")}
+                                checked={state.pendingFilters.services.includes(
+                                  "Question and an...",
+                                )}
                                 onChange={() =>
                                   dispatch({
                                     type: ACTION_TYPES.SET_PENDING_FILTER,
-                                    payload: { category: "services", value: "Question and an..." },
+                                    payload: {
+                                      category: "services",
+                                      value: "Question and an...",
+                                    },
                                   })
                                 }
                               />
@@ -391,7 +422,10 @@ const AiDeploymentsPage = () => {
                           size="lg"
                           flipped
                         >
-                          <li className={styles.overflowMenuContent} role="none">
+                          <li
+                            className={styles.overflowMenuContent}
+                            role="none"
+                          >
                             <h6 className={styles.overflowMenuHeading}>
                               Edit columns
                             </h6>
@@ -481,7 +515,12 @@ const AiDeploymentsPage = () => {
                           </li>
                         </OverflowMenu>
                         <div className={styles.deployButtonWrapper}>
-                          <MenuButton label="Deploy" kind="primary" size="lg" menuAlignment="bottom-end">
+                          <MenuButton
+                            label="Deploy"
+                            kind="primary"
+                            size="lg"
+                            menuAlignment="bottom-end"
+                          >
                             <MenuItem
                               label="Architecture"
                               onClick={() => {
@@ -588,7 +627,8 @@ const AiDeploymentsPage = () => {
                                       | "gray"
                                       | "blue" = "gray";
                                     let StatusIcon = PauseOutline;
-                                    let iconClassName = styles.statusTagSecondary;
+                                    let iconClassName =
+                                      styles.statusTagSecondary;
 
                                     if (status === "Running") {
                                       tagType = "green";
@@ -725,9 +765,9 @@ const AiDeploymentsPage = () => {
                       <strong>
                         {state.selectedRowId
                           ? state.rowsData.find(
-                            (r: AiDeploymentRow) =>
-                              r.id === state.selectedRowId,
-                          )?.name
+                              (r: AiDeploymentRow) =>
+                                r.id === state.selectedRowId,
+                            )?.name
                           : ""}
                       </strong>
                     }
