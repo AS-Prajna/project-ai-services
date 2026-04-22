@@ -68,7 +68,7 @@ const DeployServiceModal = ({
       className={styles.tearsheet}
     >
       <CreateTearsheetStep
-        title="Provide name and resources"
+        title="Provide name and view requirements"
         hasFieldset={false}
       >
          <div style={{ padding: "2rem" }}>
@@ -80,7 +80,7 @@ const DeployServiceModal = ({
           <TextInput
             id="deployment-name"
             labelText="Deployment name"
-            defaultValue="Digitize documents"
+            defaultValue={serviceName}
           />
         </Column>
       </Grid>
