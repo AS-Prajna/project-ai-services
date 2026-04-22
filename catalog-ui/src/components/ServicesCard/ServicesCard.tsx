@@ -27,26 +27,27 @@ const ServicesCard = ({
 }: ServicesCardProps) => {
   return (
     <div className={styles.card}>
-      <div className={styles.cardTop}>
-        <div className={styles.titleBadge}>
-          <span className={styles.titleText}>{title}</span>
+      <div className={styles.cardHeader}>
+        <h3 className={styles.cardTitle}>{title}</h3>
+        <div className={styles.headerRight}>
+          {category && <span className={styles.category}>{category}</span>}
+          {isCertified && (
+            <Tooltip align="top" label="IBM certified">
+              <button className={styles.certifiedBadge} type="button">
+                <Badge size={16} className={styles.badgeIcon} />
+              </button>
+            </Tooltip>
+          )}
         </div>
-        {isCertified && (
-          <Tooltip align="top" label="IBM certified">
-            <button className={styles.certifiedBadge} type="button">
-              <Badge size={20} className={styles.badgeIcon} />
-            </button>
-          </Tooltip>
-        )}
       </div>
 
       <p className={styles.cardDescription}>{description}</p>
 
       <div className={styles.tagsSection}>
-        <h4 className={styles.tagsHeading}>Architectures</h4>
+        <p className={styles.tagsHeading}>Architectures</p>
         <div className={styles.tags}>
           {tags.map((tag, index) => (
-            <Tag key={index} type="gray" size="md" className={styles.tag}>
+            <Tag key={index} type="gray" size="sm">
               {tag}
             </Tag>
           ))}
@@ -57,10 +58,9 @@ const ServicesCard = ({
         {onDeploy && (
           <Button
             kind="tertiary"
-            size="md"
+            size="sm"
             renderIcon={Deploy}
             onClick={() => onDeploy(id)}
-            className={styles.deployButton}
           >
             Deploy
           </Button>
@@ -68,10 +68,9 @@ const ServicesCard = ({
         {onExplore && (
           <Button
             kind="tertiary"
-            size="md"
+            size="sm"
             renderIcon={Deploy}
             onClick={() => onExplore(id)}
-            className={styles.deployButton}
           >
             Explore
           </Button>
@@ -79,10 +78,9 @@ const ServicesCard = ({
         {onLearnMore && (
           <Button
             kind="tertiary"
-            size="md"
+            size="sm"
             renderIcon={ArrowRight}
             onClick={() => onLearnMore(id)}
-            className={styles.learnMoreButton}
           >
             Learn more
           </Button>
