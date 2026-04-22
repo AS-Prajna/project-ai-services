@@ -73,7 +73,9 @@
 .usercircle:hover {
   background-color: theme.$layer-hover-02;
 }
-
+.profilePanel{
+  border-top: spacing.$spacing-01 solid theme.$border-subtle-01;
+}
 .userprofile {
   display: flex;
   justify-content: space-between;
@@ -81,12 +83,11 @@
   margin: spacing.$spacing-03;
   padding: spacing.$spacing-04;
   font-size: 1.1rem;
+
 }
 
 .logout {
-  border-top: spacing.$spacing-01 solid theme.$border-subtle-01;
-  background: none;
-  border: none;
+  border:none;
   width: 100%;
   text-align: left;
   cursor: pointer;
@@ -94,7 +95,7 @@
   justify-content: space-between;
   align-items: center;
   padding: spacing.$spacing-05;
-  background-color: theme.$layer-01;
+  background-color: theme.$layer-03 !important;
   color: theme.$text-primary;
 }
 
@@ -105,7 +106,6 @@
 }
 
 :global(.cds--header-panel) {
-  position: relative !important;
   bottom: auto !important;
   right: 0 !important;
   left: auto !important;

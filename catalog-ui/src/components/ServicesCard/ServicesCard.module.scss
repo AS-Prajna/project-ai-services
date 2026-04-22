@@ -1,0 +1,119 @@
+@use "@carbon/react/scss/spacing";
+@use "@carbon/react/scss/theme";
+@use '@carbon/colors';
+
+.card {
+  background-color: var(--cds-layer-01);
+  padding: spacing.$spacing-05;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: spacing.$spacing-05;
+  min-height: 32px;
+}
+
+.titleBadge {
+  background-color: colors.$blue-20;
+  border-radius: 16px;
+  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  flex: 1;
+  max-width: fit-content;
+}
+
+.titleText {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: colors.$blue-60;
+  line-height: 1.29;
+}
+
+.certifiedBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--cds-support-success);
+  z-index: 1;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.badgeIcon {
+  fill: var(--cds-support-success);
+}
+
+:global(.cds--popover-container) {
+  z-index: 9999 !important;
+}
+
+:global(.cds--tooltip) {
+  z-index: 9999 !important;
+}
+
+.cardDescription {
+  font-size: 0.875rem;
+  color: var(--cds-text-primary);
+  line-height: 1.5;
+  margin: 0 0 spacing.$spacing-05 0;
+  min-height: 84px;
+  max-height: 84px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.tagsSection {
+  display: flex;
+  flex-direction: column;
+  gap: spacing.$spacing-03;
+  margin-bottom: spacing.$spacing-05;
+}
+
+.tagsHeading {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--cds-text-secondary);
+  margin: 0;
+  letter-spacing: 0.16px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: spacing.$spacing-03;
+  min-height: 32px;
+}
+
+.tag {
+  background-color: #e0e0e0;
+  color: var(--cds-text-primary);
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 400;
+  padding: 4px 12px;
+  height: fit-content;
+}
+
+.cardActions {
+  display: flex;
+  gap: spacing.$spacing-03;
+  padding-top: 0;
+  border-top: none;
+}
+

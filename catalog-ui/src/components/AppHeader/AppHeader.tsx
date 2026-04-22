@@ -62,7 +62,7 @@ const AppHeader = (props: AppHeaderProps) => {
   const minimal = props.minimal === true;
   const [state, dispatch] = useReducer(headerReducer, initialState);
   const panelRef = useRef<HTMLDivElement>(null);
-  const userIconRef = useRef<HTMLButtonElement | null>(null);
+  const userIconRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -77,23 +77,33 @@ const AppHeader = (props: AppHeaderProps) => {
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    if (!state.isProfileOpen) {
+      return;
+    }
+
+    const handleDocumentMouseDown = (event: MouseEvent) => {
       const target = event.target as Node;
-      if (
-        panelRef.current &&
-        !panelRef.current.contains(target) &&
-        !(userIconRef.current && userIconRef.current.contains(target))
-      ) {
+      const clickedInsidePanel = panelRef.current?.contains(target) ?? false;
+      const clickedUserTrigger =
+        userIconRef.current?.contains(target) ?? false;
+
+      if (!clickedInsidePanel && !clickedUserTrigger) {
         dispatch({ type: "SET_PROFILE_OPEN", payload: false });
       }
     };
 
-    if (state.isProfileOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        dispatch({ type: "SET_PROFILE_OPEN", payload: false });
+      }
+    };
+
+    document.addEventListener("mousedown", handleDocumentMouseDown);
+    document.addEventListener("keydown", handleEscape);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleDocumentMouseDown);
+      document.removeEventListener("keydown", handleEscape);
     };
   }, [state.isProfileOpen]);
 
@@ -119,19 +129,26 @@ const AppHeader = (props: AppHeaderProps) => {
 
         {!minimal && (
           <HeaderGlobalBar>
-            <HeaderGlobalAction
-              aria-label="User"
-              aria-haspopup="menu"
-              aria-expanded={state.isProfileOpen}
-              className={styles.iconWidth}
-              isActive={state.isProfileOpen}
-              onClick={() => dispatch({ type: "TOGGLE_PROFILE" })}
+            <div
               ref={userIconRef}
+              className={styles.userActionWrapper}
+              onClick={(e) => {
+                e.stopPropagation();
+                dispatch({ type: "TOGGLE_PROFILE" });
+              }}
             >
-              <User size={20} />
-            </HeaderGlobalAction>
+              <HeaderGlobalAction
+                aria-label="User"
+                aria-haspopup="menu"
+                aria-expanded={state.isProfileOpen}
+                className={styles.iconWidth}
+                isActive={state.isProfileOpen}
+              >
+                <User size={20} />
+              </HeaderGlobalAction>
+            </div>
             <HeaderPanel ref={panelRef} expanded={state.isProfileOpen}>
-              <div>
+              <div className={styles.profilePanel}>
                 <div className={styles.userprofile}>
                   <div>
                     <strong>Admin</strong>

@@ -6,13 +6,11 @@
 }
 
 .sidebarColumn {
-  padding-left: spacing.$spacing-05;
-  padding-right: spacing.$spacing-05;
+  padding: 0 spacing.$spacing-05 0 spacing.$spacing-07 ;
 }
 
 .contentColumn {
-  padding-left: spacing.$spacing-05;
-  padding-right: spacing.$spacing-05;
+  padding: 0 spacing.$spacing-06 0 0;
 }
 
 .sidebar {
@@ -20,6 +18,16 @@
   flex-direction: column;
   gap: spacing.$spacing-05;
   padding-bottom: spacing.$spacing-05;
+}
+
+.filtersLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--cds-text-primary);
+  padding-top: spacing.$spacing-07;
+  padding-bottom: spacing.$spacing-03;
+  border-bottom: 1px solid var(--cds-border-subtle-01);
 }
 
 .cardsGrid {
@@ -45,10 +53,20 @@
 
 :global(.cds--accordion__item) {
   border-top: none;
+  border-bottom: 1px solid var(--cds-border-subtle-01);
+  margin-bottom: spacing.$spacing-03;
 }
 
 :global(.cds--accordion__heading) {
   padding-left: 0;
+  padding-right: 0;
+  font-weight: 600;
+}
+
+:global(.cds--accordion__title) {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cds-text-primary);
 }
 
 :global(.cds--accordion__content) {
@@ -60,4 +78,9 @@
   display: flex;
   flex-direction: column;
   gap: spacing.$spacing-03;
+}
+
+:global(.cds--checkbox-label-text) {
+  font-size: 0.875rem;
+  font-weight: 400;
 }

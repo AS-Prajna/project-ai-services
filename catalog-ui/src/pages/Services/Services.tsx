@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { PageHeader } from "@carbon/ibm-products";
 import {
   Grid,
@@ -11,12 +11,52 @@ import {
   Button,
 } from "@carbon/react";
 import { ArrowRight } from "@carbon/icons-react";
-import { CatalogCard } from "@/components";
+import { ServicesCard, DeployServiceModal } from "@/components";
 import styles from "./Services.module.scss";
 import { ACTION_TYPES, INITIAL_STATE, pageReducer } from "./types";
 
+const providerOptions = [
+  { id: "provider-ibm", label: "IBM", count: 4, value: "IBM" },
+  { id: "provider-private", label: "Private", count: 0, value: "Private" },
+  {
+    id: "provider-public",
+    label: "Public (third-party)",
+    count: 0,
+    value: "Public (third-party)",
+  },
+  {
+    id: "provider-certified",
+    label: "IBM certified (any provider)",
+    count: 4,
+    value: "IBM certified (any provider)",
+  },
+];
+
+const architectureOptions = [
+  { id: "arch-data", label: "Data and content mgmt", count: 0 },
+  { id: "arch-deep", label: "Deep process integration", count: 0 },
+  { id: "arch-digital", label: "Digital assistant", count: 4 },
+  { id: "arch-forecasting", label: "Forecasting", count: 0 },
+  { id: "arch-fraud", label: "Fraud detection", count: 2 },
+  { id: "arch-image", label: "Image and video analysis", count: 0 },
+  { id: "arch-recommender", label: "Recommender system", count: 0 },
+];
+
 const ServicesPage = () => {
   const [state, dispatch] = useReducer(pageReducer, INITIAL_STATE);
+  const [deployModalOpen, setDeployModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
+
+  const handleDeploy = (id: string) => {
+    const service = state.items.find((item) => item.id === id);
+    if (service) {
+      setSelectedService({ id: service.id, title: service.title });
+      setDeployModalOpen(true);
+    }
+  };
 
   const handleProviderChange = (checked: boolean, value: string) => {
     const newProviders = checked
@@ -80,8 +120,9 @@ const ServicesPage = () => {
       <div className={styles.pageContent}>
         <Grid fullWidth>
           <Column lg={4} md={2} sm={4} className={styles.sidebarColumn}>
-            <div className={styles.sidebar}>
+            <aside className={styles.sidebar}>
               <Search
+                className={styles.sidebarSearch}
                 placeholder="Search"
                 labelText="Search"
                 value={state.search}
@@ -94,118 +135,74 @@ const ServicesPage = () => {
                 size="lg"
               />
 
-              <Accordion>
+              <div className={styles.filtersLabel}>
+                <span className={styles.filtersLabelText}>Filters</span>
+              </div>
+
+              <Accordion className={styles.filtersAccordion}>
                 <AccordionItem title="Provider" open>
                   <CheckboxGroup legendText="">
-                    <Checkbox
-                      labelText="IBM"
-                      id="provider-ibm"
-                      checked={state.filters.providers.includes("IBM")}
-                      onChange={(_, { checked }) =>
-                        handleProviderChange(checked, "IBM")
-                      }
-                    />
+                    {providerOptions.map((option) => {
+                      const isDisabled = option.count === 0;
+                      const label = `${option.label}${option.count > 0 ? ` (${option.count})` : ""}`;
+
+                      return (
+                        <Checkbox
+                          key={option.id}
+                          labelText={label}
+                          id={option.id}
+                          disabled={isDisabled}
+                          checked={state.filters.providers.includes(option.value)}
+                          onChange={(_, { checked }) =>
+                            handleProviderChange(checked, option.value)
+                          }
+                        />
+                      );
+                    })}
                   </CheckboxGroup>
                 </AccordionItem>
 
-                <AccordionItem title="Reference architectures">
+                <AccordionItem title="Architectures" open>
                   <CheckboxGroup legendText="">
-                    <Checkbox
-                      labelText="Data and content mgmt"
-                      id="arch-data"
-                      checked={state.filters.referenceArchitectures.includes(
-                        "Data and content mgmt",
-                      )}
-                      onChange={(_, { checked }) =>
-                        handleReferenceArchitectureChange(
-                          checked,
-                          "Data and content mgmt",
-                        )
-                      }
-                    />
-                    <Checkbox
-                      labelText="Deep process integration"
-                      id="arch-deep"
-                      checked={state.filters.referenceArchitectures.includes(
-                        "Deep process integration",
-                      )}
-                      onChange={(_, { checked }) =>
-                        handleReferenceArchitectureChange(
-                          checked,
-                          "Deep process integration",
-                        )
-                      }
-                    />
-                    <Checkbox
-                      labelText="Digital assistant"
-                      id="arch-digital"
-                      checked={state.filters.referenceArchitectures.includes(
-                        "Digital assistant",
-                      )}
-                      onChange={(_, { checked }) =>
-                        handleReferenceArchitectureChange(
-                          checked,
-                          "Digital assistant",
-                        )
-                      }
-                    />
-                    <Checkbox
-                      labelText="Fraud detection"
-                      id="arch-fraud"
-                      checked={state.filters.referenceArchitectures.includes(
-                        "Fraud detection",
-                      )}
-                      onChange={(_, { checked }) =>
-                        handleReferenceArchitectureChange(
-                          checked,
-                          "Fraud detection",
-                        )
-                      }
-                    />
-                    <Checkbox
-                      labelText="Image and video analysis"
-                      id="arch-image"
-                      checked={state.filters.referenceArchitectures.includes(
-                        "Image and video analysis",
-                      )}
-                      onChange={(_, { checked }) =>
-                        handleReferenceArchitectureChange(
-                          checked,
-                          "Image and video analysis",
-                        )
-                      }
-                    />
-                    <Checkbox
-                      labelText="Recommender system"
-                      id="arch-recommender"
-                      checked={state.filters.referenceArchitectures.includes(
-                        "Recommender system",
-                      )}
-                      onChange={(_, { checked }) =>
-                        handleReferenceArchitectureChange(
-                          checked,
-                          "Recommender system",
-                        )
-                      }
-                    />
+                    {architectureOptions.map((option) => {
+                      const label = `${option.label}${option.count > 0 ? ` (${option.count})` : ""}`;
+
+                      return (
+                        <Checkbox
+                          key={option.id}
+                          labelText={label}
+                          id={option.id}
+                          checked={state.filters.referenceArchitectures.includes(
+                            option.label,
+                          )}
+                          onChange={(_, { checked }) =>
+                            handleReferenceArchitectureChange(
+                              checked,
+                              option.label,
+                            )
+                          }
+                        />
+                      );
+                    })}
                   </CheckboxGroup>
                 </AccordionItem>
               </Accordion>
-            </div>
+            </aside>
           </Column>
 
           <Column lg={12} md={6} sm={4} className={styles.contentColumn}>
             <div className={styles.cardsGrid}>
               {filteredItems.map((item) => (
-                <CatalogCard
+                <ServicesCard
                   key={item.id}
                   id={item.id}
                   title={item.title}
                   description={item.description}
                   tags={item.tags}
                   category={item.category}
-                  onDeploy={(id) => console.log("Deploy", id)}
-                  onLearnMore={(id) => console.log("Learn more", id)}
+                  isCertified={item.isCertified}
+                  onDeploy={handleDeploy}
+                  onLearnMore={(id: string) => console.log("Learn more", id)}
                 />
               ))}
             </div>
@@ -224,6 +221,16 @@ const ServicesPage = () => {
           </Column>
         </Grid>
       </div>
+
+      {selectedService && (
+        <DeployServiceModal
+          open={deployModalOpen}
+          key={selectedService.id}
+          onClose={() => setDeployModalOpen(false)}
+          serviceName={selectedService.title}
+          serviceId={selectedService.id}
+        />
+      )}
     </>
   );
 };

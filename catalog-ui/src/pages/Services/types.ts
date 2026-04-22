@@ -5,6 +5,7 @@ export interface CatalogItem {
   tags: string[];
   category?: string;
   provider?: string;
+  isCertified?: boolean;
 }
 
 export interface FilterState {
@@ -43,6 +44,8 @@ export const MOCK_ITEMS: CatalogItem[] = [
       "Transforms documents such as manuals, invoices, and forms into text.",
     tags: ["Digital assistant", "Find similar items"],
     provider: "IBM",
+    isCertified: true,
+
   },
   {
     id: "2",
@@ -51,6 +54,7 @@ export const MOCK_ITEMS: CatalogItem[] = [
       "Fetches similar items from the system's knowledge management for a given input text or file.",
     tags: ["Digital assistant"],
     provider: "IBM",
+    isCertified: true,
   },
   {
     id: "3",
@@ -59,6 +63,8 @@ export const MOCK_ITEMS: CatalogItem[] = [
       "Answers questions in natural language by sourcing generic & domain-specific knowledge.",
     tags: ["Digital assistant", "Deep process integration"],
     provider: "IBM",
+    isCertified: true,
+
   },
   {
     id: "4",
@@ -67,6 +73,7 @@ export const MOCK_ITEMS: CatalogItem[] = [
       "Consolidates a longer input text into a brief statement or account of the main points.",
     tags: ["Digital assistant", "Deep process integration"],
     provider: "IBM",
+    isCertified: false,
   },
 ];
 
