@@ -2,12 +2,10 @@ import { useState } from "react";
 import { CreateTearsheet, CreateTearsheetStep } from "@carbon/ibm-products";
 import {
   TextInput,
-  NumberInput,
   Select,
   SelectItem,
   Grid,
   Column,
-  Tag,
 } from "@carbon/react";
 import styles from "./DeployServiceModal.module.scss";
 
@@ -86,45 +84,60 @@ const DeployServiceModal = ({
       </Grid>
 
       {/* Resources Section */}
-      <Grid style={{ marginTop: "2rem" }}>
-        {/* vCPU */}
-        <Column lg={4} md={4} sm={4}>
-          <NumberInput
-            id="vcpu"
-            label="vCPU cores"
-            min={0}
-            step={0.1}
-            defaultValue={0.2}
-          />
+   <Grid className={styles.resourceGrid}>
+  {/* Row 1 */}
+  <Column lg={4} md={4} sm={4}>
+    <div className={styles.item}>
+      <p className={styles.label}>Required cores</p>
+      <p className={styles.value}>0.2</p>
+    </div>
+  </Column>
 
-          <div style={{ marginTop: "0.5rem" }}>
-            <span>Available cores </span>
-            <Tag type="green">12.98</Tag>
-          </div>
-        </Column>
+  <Column lg={4} md={4} sm={4}>
+    <div className={styles.item}>
+      <p className={styles.label}>Available cores</p>
+      <div className={styles.status}>
+        <span className={`${styles.dot} ${styles.green}`} />
+        <span className={styles.value}>12.98</span>
+      </div>
+    </div>
+  </Column>
 
-        {/* Memory */}
-        <Column lg={4} md={4} sm={4}>
-          <p style={{ marginBottom: "0.5rem" }}>Required memory</p>
-          <strong>10.00 GB</strong>
+  <Column lg={4} md={4} sm={4}>
+    <div className={styles.item}>
+      <p className={styles.label}>Required memory</p>
+      <p className={styles.value}>10.00 GB</p>
+    </div>
+  </Column>
 
-          <div style={{ marginTop: "0.5rem" }}>
-            <span>Available memory </span>
-            <Tag >30.00 GB</Tag>
-          </div>
-        </Column>
+  {/* Row 2 */}
+  <Column lg={4} md={4} sm={4}>
+    <div className={styles.item}>
+      <p className={styles.label}>Available memory</p>
+      <div className={styles.status}>
+        <span className={styles.warningTriangle} />
+        <span className={styles.value}>30.00 GB</span>
+      </div>
+    </div>
+  </Column>
 
-        {/* I/O */}
-        <Column lg={4} md={4} sm={4}>
-          <p style={{ marginBottom: "0.5rem" }}>Required Spyre I/O</p>
-          <strong>4</strong>
+  <Column lg={4} md={4} sm={4}>
+    <div className={styles.item}>
+      <p className={styles.label}>Required Spyre I/O</p>
+      <p className={styles.value}>4</p>
+    </div>
+  </Column>
 
-          <div style={{ marginTop: "0.5rem" }}>
-            <span>Available cores </span>
-            <Tag type="green">8</Tag>
-          </div>
-        </Column>
-      </Grid>
+  <Column lg={4} md={4} sm={4}>
+    <div className={styles.item}>
+      <p className={styles.label}>Available cores</p>
+      <div className={styles.status}>
+        <span className={`${styles.dot} ${styles.green}`} />
+        <span className={styles.value}>8</span>
+      </div>
+    </div>
+  </Column>
+</Grid>
     </div>
       </CreateTearsheetStep>
 
