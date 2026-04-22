@@ -151,10 +151,8 @@ const DeployServiceModal = ({
 
       <footer className={styles.pageFooter}>
         <Button kind="ghost" onClick={onClose}>Cancel</Button>
-        <div>
-          <Button kind="secondary" disabled style={{ marginRight: "1rem" }}>Back</Button>
-          <Button kind="primary" onClick={handleSubmit}>Next</Button>
-        </div>
+        <Button kind="secondary" disabled>Back</Button>
+        <Button kind="primary" onClick={handleSubmit}>Next</Button>
       </footer>
     </div>
   </div>
