@@ -7,6 +7,10 @@ import {
   Button,
   ProgressIndicator,
   ProgressStep,
+  Dropdown,
+  MultiSelect,
+  Accordion,
+  AccordionItem,
 } from "@carbon/react";
 import styles from "./DeployServiceModal.module.scss";
 
@@ -15,16 +19,22 @@ export interface DeployServiceModalProps {
   onClose: () => void;
   serviceName: string;
   serviceId: string;
+  serviceDescription: string;
 }
 
 interface DeploymentData {
   deploymentName: string;
+  deploymentDescription: string;
   requiredCores: number;
   requiredMemory: number;
   requiredSpyreIO: number;
   deploymentSize: string;
   region: string;
   dataSourceUrl: string;
+  serviceVersion: string;
+  inferenceBackend: string;
+  models: string[];
+  vectorStore: string;
 }
 
 const DeployServiceModal = ({
@@ -32,25 +42,104 @@ const DeployServiceModal = ({
   onClose,
   serviceName,
   serviceId,
+  serviceDescription,
 }: DeployServiceModalProps) => {
+  const [currentStep, setCurrentStep] = useState(0);
   const [deploymentData, setDeploymentData] = useState<DeploymentData>({
     deploymentName: serviceName,
+    deploymentDescription: serviceDescription,
     requiredCores: 0.2,
     requiredMemory: 10.0,
     requiredSpyreIO: 4,
     deploymentSize: "small",
     region: "us-south",
     dataSourceUrl: "",
+    serviceVersion: "1.0.2",
+    inferenceBackend: "RedHat AI Inference (default)",
+    models: ["ibm-granite/granite-3.3-8b-instruct", "ibm-granite/granite-embedding-278m-multilingual"],
+    vectorStore: "OpenSearch (default)",
   });
+
+  const [deploymentNameError, setDeploymentNameError] = useState<string>("");
+  const [deploymentNameInvalid, setDeploymentNameInvalid] = useState(false);
+  // Mock list of existing deployment names
+  const existingDeploymentNames = ["deployment-1", "deployment-2", "production-rag"];
+
+  const serviceVersions = [
+    { id: "1.0.2", text: "1.0.2" },
+    { id: "1.0.1", text: "1.0.1" },
+    { id: "1.0.0", text: "1.0.0" },
+  ];
+
+  const inferenceBackends = [
+    { id: "redhat-ai", text: "RedHat AI Inference (default)" },
+    { id: "ollama", text: "Ollama" },
+    { id: "vllm", text: "vLLM" },
+  ];
+
+  const modelOptions = [
+    { id: "granite-3.3-8b", text: "ibm-granite/granite-3.3-8b-instruct" },
+    { id: "granite-embedding", text: "ibm-granite/granite-embedding-278m-multilingual" },
+    { id: "llama-3", text: "meta-llama/llama-3-8b-instruct" },
+    { id: "mistral", text: "mistralai/mistral-7b-instruct" },
+  ];
+
+  const vectorStores = [
+    { id: "opensearch", text: "OpenSearch (default)" },
+    { id: "milvus", text: "Milvus" },
+    { id: "chromadb", text: "ChromaDB" },
+  ];
+
+  const validateDeploymentName = (name: string): string => {
+    if (!name || name.trim() === "") {
+      return "Provide a valid name";
+    }
+    if (existingDeploymentNames.includes(name.toLowerCase())) {
+      return "Name already exists";
+    }
+    return "";
+  };
+
+  const handleNameChange = (name: string) => {
+    setDeploymentData({ ...deploymentData, deploymentName: name });
+    const error = validateDeploymentName(name);
+    setDeploymentNameError(error);
+    setDeploymentNameInvalid(error !== "");
+  };
 
   const handleSubmit = () => {
     console.log("Deploying service:", serviceId, deploymentData);
     onClose();
   };
 
+  const handleNext = () => {
+    // Validate deployment name on first step before proceeding
+    if (currentStep === 0) {
+      const error = validateDeploymentName(deploymentData.deploymentName);
+      if (error) {
+        setDeploymentNameError(error);
+        setDeploymentNameInvalid(true);
+        return;
+      }
+    }
+
+    if (currentStep < 2) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      handleSubmit();
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
   useEffect(() => {
     if (open) {
       document.body.classList.add("no-scroll");
+      setCurrentStep(0);
     } else {
       document.body.classList.remove("no-scroll");
     }
@@ -59,104 +148,241 @@ const DeployServiceModal = ({
 
   if (!open) return null;
 
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 0:
+        return (
+          <>
+            <h4 className={styles.sectionTitle}>Provide name and resources</h4>
+            <div className={styles.contentInner}>
+              <Grid className={styles.resourceGrid}>
+                <Column lg={8} md={6} sm={4}>
+                  <TextInput
+                    id="deployment-name"
+                    labelText="Deployment name"
+                    style={{ backgroundColor: "var(--cds-layer-02)" }}
+                    value={deploymentData.deploymentName}
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    invalid={deploymentNameInvalid}
+                    invalidText={deploymentNameError}
+                  />
+                </Column>
+              </Grid>
+
+              <Grid className={styles.resourceGrid}>
+                <Column lg={4} md={4} sm={4}>
+                  <div className={styles.item}>
+                    <p className={styles.label}>Required cores</p>
+                    <p className={styles.value}>0.2</p>
+                  </div>
+                </Column>
+
+                <Column lg={4} md={4} sm={4}>
+                  <div className={styles.item}>
+                    <p className={styles.label}>Available cores</p>
+                    <div className={styles.status}>
+                      <span className={`${styles.dot} ${styles.green}`} />
+                      <span className={styles.value}>12.98</span>
+                    </div>
+                  </div>
+                </Column>
+
+                <Column lg={4} md={4} sm={4}>
+                  <div className={styles.item}>
+                    <p className={styles.label}>Required memory</p>
+                    <p className={styles.value}>10.00 GB</p>
+                  </div>
+                </Column>
+
+                <Column lg={4} md={4} sm={4}>
+                  <div className={styles.item}>
+                    <p className={styles.label}>Available memory</p>
+                    <div className={styles.status}>
+                      <span className={styles.warningTriangle} />
+                      <span className={styles.value}>30.00 GB</span>
+                    </div>
+                  </div>
+                </Column>
+
+                <Column lg={4} md={4} sm={4}>
+                  <div className={styles.item}>
+                    <p className={styles.label}>Required Spyre I/O</p>
+                    <p className={styles.value}>4</p>
+                  </div>
+                </Column>
+
+                <Column lg={4} md={4} sm={4}>
+                  <div className={styles.item}>
+                    <p className={styles.label}>Available cores</p>
+                    <div className={styles.status}>
+                      <span className={`${styles.dot} ${styles.green}`} />
+                      <span className={styles.value}>8</span>
+                    </div>
+                  </div>
+                </Column>
+              </Grid>
+            </div>
+          </>
+        );
+
+      case 1:
+        return (
+          <>
+            <h4 className={styles.sectionTitle}>Configure services</h4>
+
+
+            <div className={styles.contentInner}>
+              <Accordion className={styles.configAccordion} align="start">
+                <AccordionItem
+                  title={
+                    <div>
+                      <div style={{ fontWeight: 600 }}>{deploymentData.deploymentName}</div>
+                      <p>{deploymentData.deploymentDescription}</p>
+                    </div>
+
+                  } open
+                >
+
+                  <div className={styles.configFormGrid}>
+                    <div className={styles.configRow}>
+                      <div className={styles.configField}>
+                        <Dropdown
+                          id="service-version"
+                          titleText="Service version"
+                          label="Select version"
+                          items={serviceVersions}
+                          selectedItem={serviceVersions.find(v => v.id === deploymentData.serviceVersion)}
+                          onChange={({ selectedItem }) =>
+                            setDeploymentData({ ...deploymentData, serviceVersion: selectedItem?.id || "" })
+                          }
+                        />
+                      </div>
+
+                      <div className={styles.configField}>
+                        <Dropdown
+                          id="inference-backend"
+                          titleText="Inference backend"
+                          label="Select backend"
+                          items={inferenceBackends}
+                          selectedItem={inferenceBackends.find(b => b.id === "redhat-ai")}
+                          onChange={({ selectedItem }) =>
+                            setDeploymentData({ ...deploymentData, inferenceBackend: selectedItem?.text || "" })
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className={styles.configRow}>
+                      <div className={styles.configField}>
+                        <div className={styles.modelsField}>
+                          <MultiSelect
+                            id="models"
+                            titleText="Models"
+                            label="Options selected"
+                            items={modelOptions}
+                            initialSelectedItems={modelOptions.filter(m =>
+                              deploymentData.models.includes(m.text)
+                            )}
+                            onChange={({ selectedItems }) =>
+                              setDeploymentData({
+                                ...deploymentData,
+                                models: selectedItems ? selectedItems.map(item => item.text) : []
+                              })
+                            }
+                          />
+                        </div>
+                        <div className={styles.selectedModels}>
+                          {deploymentData.models.map((model, index) => (
+                            <Tag key={index} type="gray" className={styles.modelTag}>
+                              {model}
+                            </Tag>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className={styles.configField}>
+                        <Dropdown
+                          id="vector-store"
+                          titleText="Vector store"
+                          label="Select store"
+                          items={vectorStores}
+                          selectedItem={vectorStores.find(v => v.id === "opensearch")}
+                          onChange={({ selectedItem }) =>
+                            setDeploymentData({ ...deploymentData, vectorStore: selectedItem?.text || "" })
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </AccordionItem>
+              </Accordion>
+            </div>
+          </>
+        );
+
+      case 2:
+        return (
+          <>
+            <h4 className={styles.sectionTitle}>Ingest data (optional)</h4>
+            <div className={styles.contentInner}>
+              <p className={styles.optionalStepText}>
+                You can ingest data now or skip this step and do it later.
+              </p>
+              <Grid className={styles.resourceGrid}>
+                <Column lg={8} md={6} sm={4}>
+                  <TextInput
+                    id="data-source-url"
+                    labelText="Data source URL"
+                    placeholder="Enter URL"
+                    value={deploymentData.dataSourceUrl}
+                    onChange={(e) => setDeploymentData({ ...deploymentData, dataSourceUrl: e.target.value })}
+                  />
+                </Column>
+              </Grid>
+            </div>
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.page}>
-      <header className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Deploy service</h1>
-        <Tag type="gray" className={styles.pageBadge}>{serviceName}</Tag>
-      </header>
+          <header className={styles.pageHeader}>
+            <h1 className={styles.pageTitle}>Deploy service</h1>
+            <Tag type="gray" className={styles.pageBadge}>{serviceName}</Tag>
+          </header>
 
-      <div className={styles.pageBody}>
-        <aside className={styles.pageLeft}>
-          <ProgressIndicator vertical currentIndex={0}>
-            <ProgressStep label="Provide name and view requirements" />
-            <ProgressStep label="Configure service" />
-            <ProgressStep label="Ingest data (optional)" />
-          </ProgressIndicator>
-        </aside>
+          <div className={styles.pageBody}>
+            <aside className={styles.pageLeft}>
+              <ProgressIndicator vertical currentIndex={currentStep}>
+                <ProgressStep label="Provide name and view requirements" />
+                <ProgressStep label="Configure service" />
+                <ProgressStep label="Ingest data (optional)" />
+              </ProgressIndicator>
+            </aside>
 
-        <main className={styles.pageRight}>
-          <h4 className={styles.sectionTitle}>Provide name and resources</h4>
-
-          <div className={styles.contentInner}>
-            <Grid className={styles.resourceGrid}>
-              <Column lg={8} md={6} sm={4}>
-                <TextInput
-                  id="deployment-name"
-                  labelText="Deployment name"
-                  style={{ backgroundColor: "var(--cds-layer-02)" }}
-                  value={deploymentData.deploymentName}
-                  onChange={(e) => setDeploymentData({ ...deploymentData, deploymentName: e.target.value })}
-                />
-              </Column>
-            </Grid>
-
-            <Grid className={styles.resourceGrid}>
-              <Column lg={4} md={4} sm={4}>
-                <div className={styles.item}>
-                  <p className={styles.label}>Required cores</p>
-                  <p className={styles.value}>0.2</p>
-                </div>
-              </Column>
-
-              <Column lg={4} md={4} sm={4}>
-                <div className={styles.item}>
-                  <p className={styles.label}>Available cores</p>
-                  <div className={styles.status}>
-                    <span className={`${styles.dot} ${styles.green}`} />
-                    <span className={styles.value}>12.98</span>
-                  </div>
-                </div>
-              </Column>
-
-              <Column lg={4} md={4} sm={4}>
-                <div className={styles.item}>
-                  <p className={styles.label}>Required memory</p>
-                  <p className={styles.value}>10.00 GB</p>
-                </div>
-              </Column>
-
-              <Column lg={4} md={4} sm={4}>
-                <div className={styles.item}>
-                  <p className={styles.label}>Available memory</p>
-                  <div className={styles.status}>
-                    <span className={styles.warningTriangle} />
-                    <span className={styles.value}>30.00 GB</span>
-                  </div>
-                </div>
-              </Column>
-
-              <Column lg={4} md={4} sm={4}>
-                <div className={styles.item}>
-                  <p className={styles.label}>Required Spyre I/O</p>
-                  <p className={styles.value}>4</p>
-                </div>
-              </Column>
-
-              <Column lg={4} md={4} sm={4}>
-                <div className={styles.item}>
-                  <p className={styles.label}>Available cores</p>
-                  <div className={styles.status}>
-                    <span className={`${styles.dot} ${styles.green}`} />
-                    <span className={styles.value}>8</span>
-                  </div>
-                </div>
-              </Column>
-            </Grid>
+            <main className={styles.pageRight}>
+              {renderStepContent()}
+            </main>
           </div>
-        </main>
-      </div>
 
-      <footer className={styles.pageFooter}>
-        <Button kind="ghost" onClick={onClose}>Cancel</Button>
-        <Button kind="secondary" disabled>Back</Button>
-        <Button kind="primary" onClick={handleSubmit}>Next</Button>
-      </footer>
+          <footer className={styles.pageFooter}>
+            <Button kind="ghost" onClick={onClose}>Cancel</Button>
+            <Button kind="secondary" disabled={currentStep === 0} onClick={handleBack}>
+              Back
+            </Button>
+            <Button kind="primary" onClick={handleNext}>
+              {currentStep === 2 ? "Deploy" : "Next"}
+            </Button>
+          </footer>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
   );
 };
 

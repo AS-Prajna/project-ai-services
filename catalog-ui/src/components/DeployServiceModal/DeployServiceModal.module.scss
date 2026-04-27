@@ -331,3 +331,132 @@
   border-bottom: 10px solid $yellow-30; // add your color here
 }
 
+/* Configure Service Step Styles */
+.configAccordion {
+  margin-top: spacing.$spacing-05;
+
+  :global(.cds--accordion__item) {
+    border: 1px solid var(--cds-border-subtle-01);
+    border-radius: 4px;
+    margin-bottom: spacing.$spacing-05;
+    background: var(--cds-layer-02);
+  }
+
+  :global(.cds--accordion__heading) {
+    background: var(--cds-layer-02);
+    padding: spacing.$spacing-05;
+    font-size: 1rem;
+    font-weight: 600;
+    
+    &:hover {
+      background: var(--cds-layer-hover-02);
+    }
+  }
+
+  :global(.cds--accordion__content) {
+    padding: spacing.$spacing-06;
+    background: var(--cds-layer-01);
+  }
+
+  :global(.cds--accordion__arrow) {
+    fill: var(--cds-icon-primary);
+  }
+
+  :global(.cds--accordion__title) {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--cds-text-primary);
+  }
+}
+
+.serviceDescription {
+  font-size: 0.875rem;
+  color: var(--cds-text-secondary);
+  margin: 0 0 spacing.$spacing-07 0;
+  line-height: 1.5;
+}
+
+.configFormGrid {
+  display: flex;
+  flex-direction: column;
+  gap: spacing.$spacing-06;
+}
+
+.configRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: spacing.$spacing-06;
+  align-items: start;
+}
+
+.configField {
+  display: flex;
+  flex-direction: column;
+  gap: spacing.$spacing-03;
+
+  :global(.cds--dropdown),
+  :global(.cds--multi-select) {
+    background-color: var(--cds-field-01);
+  }
+
+  :global(.cds--label) {
+    font-size: 0.75rem;
+    color: var(--cds-text-secondary);
+    margin-bottom: spacing.$spacing-03;
+    font-weight: 400;
+  }
+
+  :global(.cds--list-box__field) {
+    background-color: var(--cds-field-01);
+  }
+
+  :global(.cds--list-box__menu) {
+    background-color: var(--cds-layer-01);
+  }
+
+  :global(.cds--dropdown__wrapper),
+  :global(.cds--multi-select__wrapper) {
+    width: 100%;
+  }
+}
+
+.modelsField {
+  margin-bottom: spacing.$spacing-03;
+}
+
+.selectedModels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: spacing.$spacing-03;
+  margin-top: spacing.$spacing-03;
+}
+
+.modelTag {
+  font-size: 0.75rem;
+  padding: spacing.$spacing-02 spacing.$spacing-03;
+  background-color: var(--cds-layer-02);
+  border: 1px solid var(--cds-border-subtle-01);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* Error state styling for TextInput */
+:global(.cds--text-input__field-wrapper.cds--text-input--invalid) {
+  :global(.cds--text-input) {
+    border-color: #da1e28 !important;
+    border-width: 2px;
+  }
+}
+
+:global(.cds--text-input.cds--text-input--invalid) {
+  border-color: #da1e28 !important;
+  border-width: 2px;
+}
+
+.optionalStepText {
+  font-size: 0.875rem;
+  color: var(--cds-text-secondary);
+  margin: 0 0 spacing.$spacing-06 0;
+  line-height: 1.5;
+}
+

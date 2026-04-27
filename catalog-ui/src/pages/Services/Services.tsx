@@ -48,12 +48,13 @@ const ServicesPage = () => {
   const [selectedService, setSelectedService] = useState<{
     id: string;
     title: string;
+    description:string;
   } | null>(null);
 
   const handleDeploy = (id: string) => {
     const service = state.items.find((item) => item.id === id);
     if (service) {
-      setSelectedService({ id: service.id, title: service.title });
+      setSelectedService({ id: service.id, title: service.title, description : service.description});
       setDeployModalOpen(true);
     }
   };
@@ -228,6 +229,7 @@ const ServicesPage = () => {
           key={selectedService.id}
           onClose={() => setDeployModalOpen(false)}
           serviceName={selectedService.title}
+          serviceDescription = {selectedService.description}
           serviceId={selectedService.id}
         />
       )}
