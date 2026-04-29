@@ -9,7 +9,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.55);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -396,7 +396,7 @@
 
   :global(.cds--dropdown),
   :global(.cds--multi-select) {
-    background-color: var(--cds-field-01);
+    background-color: var(--cds-layer-01);
   }
 
   :global(.cds--label) {
@@ -407,11 +407,29 @@
   }
 
   :global(.cds--list-box__field) {
-    background-color: var(--cds-field-01);
+    background-color: var(--cds-layer-01);
+    color: var(--cds-text-primary);
+    border: 1px solid var(--cds-border-subtle-01);
+    border-radius: 4px;
+    min-height: 46px;
+    padding: 0 14px;
   }
 
   :global(.cds--list-box__menu) {
     background-color: var(--cds-layer-01);
+    z-index: 9999;
+    border: 1px solid var(--cds-border-subtle-01);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  :global(.cds--list-box__menu-item) {
+    color: var(--cds-text-primary) !important;
+    background-color: var(--cds-layer-01) !important;
+  }
+
+  :global(.cds--list-box__menu-item--highlighted) {
+    color: var(--cds-text-primary) !important;
+    background-color: var(--cds-layer-hover-01) !important;
   }
 
   :global(.cds--dropdown__wrapper),

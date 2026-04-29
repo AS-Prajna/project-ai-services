@@ -8,7 +8,6 @@ import {
   ProgressIndicator,
   ProgressStep,
   Dropdown,
-  MultiSelect,
   Accordion,
   AccordionItem,
 } from "@carbon/react";
@@ -33,7 +32,8 @@ interface DeploymentData {
   dataSourceUrl: string;
   serviceVersion: string;
   inferenceBackend: string;
-  models: string[];
+  inferenceModel: string;
+  llmIngestModel: string;
   vectorStore: string;
 }
 
@@ -55,9 +55,10 @@ const DeployServiceModal = ({
     region: "us-south",
     dataSourceUrl: "",
     serviceVersion: "1.0.2",
-    inferenceBackend: "RedHat AI Inference (default)",
-    models: ["ibm-granite/granite-3.3-8b-instruct", "ibm-granite/granite-embedding-278m-multilingual"],
-    vectorStore: "OpenSearch (default)",
+    inferenceBackend: "redhat-ai",
+    inferenceModel: "ibm-granite/granite-3.3-8b-instruct",
+    llmIngestModel: "ibm-granite/granite-3.3-8b-instruct",
+    vectorStore: "opensearch",
   });
 
   const [deploymentNameError, setDeploymentNameError] = useState<string>("");
@@ -251,9 +252,40 @@ const DeployServiceModal = ({
                           titleText="Service version"
                           label="Select version"
                           items={serviceVersions}
+                          itemToString={(item) => (item ? item.text : "")}
                           selectedItem={serviceVersions.find(v => v.id === deploymentData.serviceVersion)}
                           onChange={({ selectedItem }) =>
                             setDeploymentData({ ...deploymentData, serviceVersion: selectedItem?.id || "" })
+                          }
+                        />
+                      </div>
+
+                      <div className={styles.configField}>
+                        <Dropdown
+                          id="vector-store"
+                          titleText="Vector store"
+                          label="Select store"
+                          items={vectorStores}
+                          itemToString={(item) => (item ? item.text : "")}
+                          selectedItem={vectorStores.find(v => v.id === deploymentData.vectorStore)}
+                          onChange={({ selectedItem }) =>
+                            setDeploymentData({ ...deploymentData, vectorStore: selectedItem?.id || "" })
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className={styles.configRow}>
+                      <div className={styles.configField}>
+                        <Dropdown
+                          id="inference-model"
+                          titleText="Inference model"
+                          label="Select model"
+                          items={modelOptions}
+                          itemToString={(item) => (item ? item.text : "")}
+                          selectedItem={modelOptions.find(m => m.text === deploymentData.inferenceModel)}
+                          onChange={({ selectedItem }) =>
+                            setDeploymentData({ ...deploymentData, inferenceModel: selectedItem?.text || "" })
                           }
                         />
                       </div>
@@ -264,9 +296,10 @@ const DeployServiceModal = ({
                           titleText="Inference backend"
                           label="Select backend"
                           items={inferenceBackends}
-                          selectedItem={inferenceBackends.find(b => b.id === "redhat-ai")}
+                          itemToString={(item) => (item ? item.text : "")}
+                          selectedItem={inferenceBackends.find(b => b.id === deploymentData.inferenceBackend)}
                           onChange={({ selectedItem }) =>
-                            setDeploymentData({ ...deploymentData, inferenceBackend: selectedItem?.text || "" })
+                            setDeploymentData({ ...deploymentData, inferenceBackend: selectedItem?.id || "" })
                           }
                         />
                       </div>
@@ -274,44 +307,17 @@ const DeployServiceModal = ({
 
                     <div className={styles.configRow}>
                       <div className={styles.configField}>
-                        <div className={styles.modelsField}>
-                          <MultiSelect
-                            id="models"
-                            titleText="Models"
-                            label="Options selected"
-                            items={modelOptions}
-                            initialSelectedItems={modelOptions.filter(m =>
-                              deploymentData.models.includes(m.text)
-                            )}
-                            onChange={({ selectedItems }) =>
-                              setDeploymentData({
-                                ...deploymentData,
-                                models: selectedItems ? selectedItems.map(item => item.text) : []
-                              })
-                            }
-                          />
-                        </div>
-                        <div className={styles.selectedModels}>
-                          {deploymentData.models.map((model, index) => (
-                            <Tag key={index} type="gray" className={styles.modelTag}>
-                              {model}
-                            </Tag>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className={styles.configField}>
                         <Dropdown
-                          id="vector-store"
-                          titleText="Vector store"
-                          label="Select store"
-                          items={vectorStores}
-                          selectedItem={vectorStores.find(v => v.id === "opensearch")}
-                          onChange={({ selectedItem }) =>
-                            setDeploymentData({ ...deploymentData, vectorStore: selectedItem?.text || "" })
-                          }
+                          id="llm-ingest-model"
+                          titleText="LLM ingest model (cannot be changed after deployment)"
+                          label="Select model"
+                          items={modelOptions}
+                          itemToString={(item) => (item ? item.text : "")}
+                          selectedItem={modelOptions.find(m => m.text === deploymentData.llmIngestModel)}
+                          helperText="For data recognition and categorization during digitization"
                         />
                       </div>
+                      <div />
                     </div>
                   </div>
                 </AccordionItem>

@@ -1,4 +1,5 @@
-import { useReducer, useState } from "react";
+import { useReducer } from "react";
+import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@carbon/ibm-products";
 import {
   Grid,
@@ -11,7 +12,7 @@ import {
   Button,
 } from "@carbon/react";
 import { ArrowRight } from "@carbon/icons-react";
-import { ServicesCard, DeployServiceModal } from "@/components";
+import { ServicesCard } from "@/components";
 import styles from "./Services.module.scss";
 import { ACTION_TYPES, INITIAL_STATE, pageReducer } from "./types";
 
@@ -44,18 +45,20 @@ const architectureOptions = [
 
 const ServicesPage = () => {
   const [state, dispatch] = useReducer(pageReducer, INITIAL_STATE);
-  const [deployModalOpen, setDeployModalOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<{
-    id: string;
-    title: string;
-    description:string;
-  } | null>(null);
+  const navigate = useNavigate();
 
   const handleDeploy = (id: string) => {
     const service = state.items.find((item) => item.id === id);
     if (service) {
-      setSelectedService({ id: service.id, title: service.title, description : service.description});
-      setDeployModalOpen(true);
+      navigate("/ai-deployments", { 
+        state: { 
+          deploy: { 
+            id: service.id, 
+            title: service.title, 
+            description: service.description 
+          } 
+        } 
+      });
     }
   };
 
@@ -223,16 +226,7 @@ const ServicesPage = () => {
         </Grid>
       </div>
 
-      {selectedService && (
-        <DeployServiceModal
-          open={deployModalOpen}
-          key={selectedService.id}
-          onClose={() => setDeployModalOpen(false)}
-          serviceName={selectedService.title}
-          serviceDescription = {selectedService.description}
-          serviceId={selectedService.id}
-        />
-      )}
+      {/* Deploy modal now handled by AI-deployments page */}
     </>
   );
 };

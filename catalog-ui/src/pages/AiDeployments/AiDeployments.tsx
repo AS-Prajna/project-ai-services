@@ -1,4 +1,5 @@
-import { useReducer } from "react";
+import { useReducer, useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { PageHeader, NoDataEmptyState } from "@carbon/ibm-products";
 import {
   DataTable,
@@ -40,12 +41,29 @@ import {
   InProgress,
   Delete,
 } from "@carbon/icons-react";
+import { DeployServiceModal } from "@/components";
 import styles from "./AiDeployments.module.scss";
 import type { AiDeploymentRow } from "./types";
 import { ACTION_TYPES, HEADERS, INITIAL_STATE, appReducer } from "./types";
 
 const AiDeploymentsPage = () => {
   const [state, dispatch] = useReducer(appReducer, INITIAL_STATE);
+  const location = useLocation();
+  const [deployModalOpen, setDeployModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<{
+    id: string;
+    title: string;
+    description: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (location.state?.deploy) {
+      setSelectedService(location.state.deploy);
+      setDeployModalOpen(true);
+      // Clear the navigation state
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state?.deploy]);
 
   const handleDelete = async () => {
     if (!state.selectedRowId) {
@@ -841,6 +859,20 @@ const AiDeploymentsPage = () => {
           </Column>
         </Grid>
       </div>
+
+      {selectedService && (
+        <DeployServiceModal
+          open={deployModalOpen}
+          key={selectedService.id}
+          onClose={() => {
+            setDeployModalOpen(false);
+            setSelectedService(null);
+          }}
+          serviceName={selectedService.title}
+          serviceDescription={selectedService.description}
+          serviceId={selectedService.id}
+        />
+      )}
     </>
   );
 };
