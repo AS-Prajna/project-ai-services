@@ -315,6 +315,9 @@ const DeployServiceModal = ({
                           itemToString={(item) => (item ? item.text : "")}
                           selectedItem={modelOptions.find(m => m.text === deploymentData.llmIngestModel)}
                           helperText="For data recognition and categorization during digitization"
+                          onChange={({ selectedItem }) =>
+                            setDeploymentData({ ...deploymentData, llmIngestModel: selectedItem?.id || "" })
+                          }
                         />
                       </div>
                       <div />
@@ -329,20 +332,12 @@ const DeployServiceModal = ({
       case 2:
         return (
           <>
-            <h4 className={styles.sectionTitle}>Ingest data (optional)</h4>
+            <h4 className={styles.sectionTitle}>Provide name and adjust resources</h4>
             <div className={styles.contentInner}>
-              <p className={styles.optionalStepText}>
-                You can ingest data now or skip this step and do it later.
-              </p>
+             
               <Grid className={styles.resourceGrid}>
                 <Column lg={8} md={6} sm={4}>
-                  <TextInput
-                    id="data-source-url"
-                    labelText="Data source URL"
-                    placeholder="Enter URL"
-                    value={deploymentData.dataSourceUrl}
-                    onChange={(e) => setDeploymentData({ ...deploymentData, dataSourceUrl: e.target.value })}
-                  />
+                
                 </Column>
               </Grid>
             </div>
@@ -378,7 +373,7 @@ const DeployServiceModal = ({
           </div>
 
           <footer className={styles.pageFooter}>
-            <Button kind="ghost" onClick={onClose}>Cancel</Button>
+            <Button style={{ }} kind="ghost" onClick={onClose}>Cancel</Button>
             <Button kind="secondary" disabled={currentStep === 0} onClick={handleBack}>
               Back
             </Button>

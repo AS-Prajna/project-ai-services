@@ -124,7 +124,11 @@
   :global(.cds--btn--ghost) {
     background-color:var(--cds-layer-02);
     color: var(--cds-interactive);
-    display: flex;
+    position: relative;
+    right: 430px;
+    align-items: start;
+    padding:  spacing.$spacing-03 0 0 spacing.$spacing-03;
+    
   }
 
   /* Back: secondary - positioned on the right */
@@ -355,7 +359,7 @@
 
   :global(.cds--accordion__content) {
     padding: spacing.$spacing-06;
-    background: var(--cds-layer-01);
+    background: var(--cds-layer-04);
   }
 
   :global(.cds--accordion__arrow) {
@@ -409,33 +413,13 @@
   :global(.cds--list-box__field) {
     background-color: var(--cds-layer-01);
     color: var(--cds-text-primary);
-    border: 1px solid var(--cds-border-subtle-01);
+    border-bottom: 1px solid var(--cds-border-strong);
     border-radius: 4px;
     min-height: 46px;
     padding: 0 14px;
   }
 
-  :global(.cds--list-box__menu) {
-    background-color: var(--cds-layer-01);
-    z-index: 9999;
-    border: 1px solid var(--cds-border-subtle-01);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  }
-
-  :global(.cds--list-box__menu-item) {
-    color: var(--cds-text-primary) !important;
-    background-color: var(--cds-layer-01) !important;
-  }
-
-  :global(.cds--list-box__menu-item--highlighted) {
-    color: var(--cds-text-primary) !important;
-    background-color: var(--cds-layer-hover-01) !important;
-  }
-
-  :global(.cds--dropdown__wrapper),
-  :global(.cds--multi-select__wrapper) {
-    width: 100%;
-  }
+  
 }
 
 .modelsField {
